@@ -176,26 +176,29 @@ function AuthCard({ onDone }: { onDone: () => void }) {
 
 // ==================== DASHBOARD ====================
 type Tab =
-  | "portfolio" | "services" | "pricing" | "addons" | "testimonials" | "faqs"
-  | "hero" | "about" | "founder" | "contact" | "submissions" | "media";
+  | "sections" | "portfolio" | "services" | "why" | "pricing" | "addons" | "testimonials" | "faqs"
+  | "hero" | "about" | "founder" | "process" | "contact" | "submissions" | "media";
 
 const TABS: { id: Tab; label: string }[] = [
-  { id: "portfolio", label: "Portfolio" },
-  { id: "services", label: "Services" },
-  { id: "pricing", label: "Pricing" },
-  { id: "addons", label: "Add-ons" },
-  { id: "testimonials", label: "Testimonials" },
-  { id: "faqs", label: "FAQs" },
+  { id: "sections", label: "Section Text" },
   { id: "hero", label: "Hero" },
   { id: "about", label: "About" },
+  { id: "services", label: "Services" },
+  { id: "why", label: "Why Choose Us" },
+  { id: "pricing", label: "Pricing" },
+  { id: "addons", label: "Add-ons" },
+  { id: "portfolio", label: "Portfolio" },
   { id: "founder", label: "Founder" },
+  { id: "process", label: "Process Steps" },
+  { id: "testimonials", label: "Testimonials" },
+  { id: "faqs", label: "FAQs" },
   { id: "contact", label: "Contact Info" },
   { id: "submissions", label: "Submissions" },
   { id: "media", label: "Media" },
 ];
 
 function Dashboard({ email, onSignOut }: { email: string; onSignOut: () => void }) {
-  const [tab, setTab] = useState<Tab>("portfolio");
+  const [tab, setTab] = useState<Tab>("sections");
   const qc = useQueryClient();
   const content = useQuery({ queryKey: ["admin-content"], queryFn: () => getSiteContent(), staleTime: 0 });
 
@@ -348,6 +351,30 @@ function Dashboard({ email, onSignOut }: { email: string; onSignOut: () => void 
                 onChanged={() => { qc.invalidateQueries(); content.refetch(); }}
               />
             )}
+            {tab === "sections" && (
+              <SectionMetaPanel meta={content.data.meta} onChanged={() => { qc.invalidateQueries(); content.refetch(); }} />
+            )}
+            {tab === "why" && (
+              <ListEditor table="why_choose_us" title="Why Choose Us Items" rows={content.data.whyChooseUs}
+                fields={[
+                  { key: "title", label: "Title", type: "text", required: true },
+                  { key: "description", label: "Description", type: "textarea", required: true },
+                  { key: "sort_order", label: "Order", type: "number" },
+                ]}
+                onChanged={() => { qc.invalidateQueries(); content.refetch(); }}
+              />
+            )}
+            {tab === "process" && (
+              <ListEditor table="process_steps" title="Process Steps" rows={content.data.processSteps}
+                fields={[
+                  { key: "title", label: "Step Title", type: "text", required: true },
+                  { key: "description", label: "Description", type: "textarea", required: true },
+                  { key: "duration", label: "Duration (e.g. 2–4 days)", type: "text" },
+                  { key: "sort_order", label: "Order", type: "number" },
+                ]}
+                onChanged={() => { qc.invalidateQueries(); content.refetch(); }}
+              />
+            )}
             {tab === "submissions" && <SubmissionsPanel />}
             {tab === "media" && <MediaPanel />}
           </>
@@ -439,10 +466,11 @@ function ListEditor({ table, title, rows, fields, onChanged }: {
       </div>
       <div className="space-y-2">
         {rows.map((r) => {
-          const title = (r.name ?? r.title ?? r.question ?? r.headline ?? r.id) as string;
+          const primary = (r.name ?? r.title ?? r.question ?? r.headline ?? r.id) as string;
+          const secondary = r.price ? ` — ${r.price}` : r.category ? ` — ${r.category}` : "";
           return (
             <div key={r.id as string} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.02] p-3">
-              <div className="flex-1 truncate text-sm">{title}</div>
+              <div className="flex-1 truncate text-sm"><span className="font-medium">{primary}</span><span className="text-white/50">{secondary}</span></div>
               <button onClick={() => setEditing(r)} className="rounded-lg border border-white/10 px-3 py-1.5 text-xs hover:border-[#38BDF8]/40">Edit</button>
               <button onClick={() => remove(r.id as string)} className="rounded-lg border border-white/10 px-3 py-1.5 text-xs text-red-400 hover:border-red-500/40"><Trash2 size={12} /></button>
             </div>
@@ -567,3 +595,87 @@ function MediaPanel() {
     </div>
   );
 }
+
+// ==================== SECTION META PANEL ====================
+const SECTION_LIST: { key: string; label: string; hasSub?: boolean }[] = [
+  { key: "about", label: "About", hasSub: false },
+  { key: "services", label: "Services", hasSub: true },
+  { key: "why", label: "Why Choose Us", hasSub: false },
+  { key: "pricing", label: "Pricing", hasSub: true },
+  { key: "addons", label: "Add-ons Heading", hasSub: false },
+  { key: "portfolio", label: "Portfolio", hasSub: false },
+  { key: "founder", label: "Founder", hasSub: false },
+  { key: "process", label: "Process", hasSub: true },
+  { key: "faq", label: "FAQ", hasSub: false },
+  { key: "contact", label: "Contact", hasSub: true },
+];
+
+function SectionMetaPanel({
+  meta,
+  onChanged,
+}: {
+  meta: Record<string, { eyebrow: string | null; heading: string | null; subheading: string | null; extra: string | null }>;
+  onChanged: () => void;
+}) {
+  const upsert = useServerFn(adminUpsert);
+  const [rows, setRows] = useState(() =>
+    Object.fromEntries(SECTION_LIST.map((s) => [s.key, meta[s.key] ?? { eyebrow: "", heading: "", subheading: "", extra: "" }])),
+  );
+  useEffect(() => {
+    setRows(Object.fromEntries(SECTION_LIST.map((s) => [s.key, meta[s.key] ?? { eyebrow: "", heading: "", subheading: "", extra: "" }])));
+  }, [meta]);
+
+  async function save(key: string) {
+    try {
+      const r = rows[key];
+      await upsert({
+        data: {
+          table: "section_meta" as never,
+          row: { section: key, eyebrow: r.eyebrow || null, heading: r.heading || null, subheading: r.subheading || null } as never,
+        },
+      });
+      toast.success(`Saved "${key}"`);
+      onChanged();
+      broadcastCmsUpdate();
+    } catch (err) { toast.error(err instanceof Error ? err.message : "Save failed"); }
+  }
+
+  const input = "w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm outline-none focus:border-[#38BDF8]";
+
+  return (
+    <div>
+      <div className="mb-5">
+        <h2 className="font-display text-xl font-semibold">Section Text</h2>
+        <p className="mt-1 text-xs text-white/50">Edit the eyebrow tag, main heading, and subheading shown at the top of each site section.</p>
+      </div>
+      <div className="space-y-4">
+        {SECTION_LIST.map((s) => {
+          const r = rows[s.key];
+          return (
+            <div key={s.key} className="rounded-2xl border border-white/10 bg-white/[0.02] p-5">
+              <div className="mb-3 flex items-center justify-between">
+                <div className="font-display font-semibold">{s.label}</div>
+                <button onClick={() => save(s.key)} className="btn-primary btn-primary-hover !py-1.5 !text-xs">Save</button>
+              </div>
+              <div className="grid gap-3 md:grid-cols-3">
+                <div>
+                  <label className="mb-1 block text-[10px] uppercase tracking-wider text-white/50">Eyebrow tag</label>
+                  <input className={input} value={r.eyebrow ?? ""} onChange={(e) => setRows({ ...rows, [s.key]: { ...r, eyebrow: e.target.value } })} />
+                </div>
+                <div>
+                  <label className="mb-1 block text-[10px] uppercase tracking-wider text-white/50">Heading</label>
+                  <input className={input} value={r.heading ?? ""} onChange={(e) => setRows({ ...rows, [s.key]: { ...r, heading: e.target.value } })} />
+                </div>
+                <div>
+                  <label className="mb-1 block text-[10px] uppercase tracking-wider text-white/50">Subheading</label>
+                  <input className={input} value={r.subheading ?? ""} onChange={(e) => setRows({ ...rows, [s.key]: { ...r, subheading: e.target.value } })} />
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+

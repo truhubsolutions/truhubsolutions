@@ -1,6 +1,7 @@
 "use client";
 import { Check } from "lucide-react";
 import { Reveal } from "./reveal";
+import { SectionHeader, type SectionMeta } from "./section-header";
 const founderPhoto = { url: "/founder-jayanth.jpg" };
 
 export function Founder({
@@ -9,28 +10,20 @@ export function Founder({
   vision,
   skills,
   photoUrl,
+  meta,
 }: {
   name: string;
   title: string;
   vision: string;
   skills: string[];
   photoUrl?: string | null;
+  meta?: SectionMeta;
 }) {
   const src = photoUrl || founderPhoto.url;
   return (
     <section id="founder" className="section relative">
       <div className="container-x">
-        <Reveal>
-          <div className="mx-auto mb-14 max-w-2xl text-center">
-            <div className="mb-3 inline-block rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-medium text-[#38BDF8]">
-              Meet the Founder
-            </div>
-            <h2 className="font-display text-4xl font-bold sm:text-5xl">
-              <span className="text-gradient">The mind behind the mission</span>
-            </h2>
-
-          </div>
-        </Reveal>
+        <SectionHeader meta={meta} eyebrow="Meet the Founder" heading="The mind behind the mission" />
 
         <div className="grid gap-10 lg:grid-cols-[1.05fr_1.2fr] lg:items-center">
           <Reveal>

@@ -5,6 +5,7 @@ import {
   Palette, Rocket, Search, Sparkles, Wrench, Zap, type LucideIcon,
 } from "lucide-react";
 import { Reveal } from "./reveal";
+import { SectionHeader, type SectionMeta } from "./section-header";
 
 const ICONS: Record<string, LucideIcon> = {
   code: Code, rocket: Rocket, briefcase: Briefcase, image: ImageIcon,
@@ -45,23 +46,16 @@ function TiltCard({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function Services({ items }: { items: Array<{ id: string; title: string; description: string; icon: string }> }) {
+export function Services({ items, meta }: { items: Array<{ id: string; title: string; description: string; icon: string }>; meta?: SectionMeta }) {
   return (
     <section id="services" className="section relative">
       <div className="container-x">
-        <Reveal>
-          <div className="mx-auto mb-14 max-w-2xl text-center">
-            <div className="mb-3 inline-block rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-medium text-[#38BDF8]">
-              Services
-            </div>
-            <h2 className="font-display text-4xl font-bold sm:text-5xl">
-              <span className="text-gradient">Everything you need to grow online</span>
-            </h2>
-            <p className="mt-4 text-white/60">
-              Twelve services. One partner. Built for founders who want it done right.
-            </p>
-          </div>
-        </Reveal>
+        <SectionHeader
+          meta={meta}
+          eyebrow="Services"
+          heading="Everything you need to grow online"
+          subheading="Twelve services. One partner. Built for founders who want it done right."
+        />
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {items.map((s, i) => {
             const Icon = ICONS[s.icon] ?? Sparkles;
@@ -86,20 +80,15 @@ export function Services({ items }: { items: Array<{ id: string; title: string; 
   );
 }
 
-export function WhyChooseUs({ items }: { items: Array<{ title: string; desc: string }> }) {
+export function WhyChooseUs({ items, meta }: { items: Array<{ title: string; desc: string }>; meta?: SectionMeta }) {
   return (
     <section id="why" className="section relative">
       <div className="container-x">
-        <Reveal>
-          <div className="mx-auto mb-14 max-w-2xl text-center">
-            <div className="mb-3 inline-block rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-medium text-[#38BDF8]">
-              Why Choose Us
-            </div>
-            <h2 className="font-display text-4xl font-bold sm:text-5xl">
-              <span className="text-gradient">Crafted for teams that ship</span>
-            </h2>
-          </div>
-        </Reveal>
+        <SectionHeader
+          meta={meta}
+          eyebrow="Why Choose Us"
+          heading="Crafted for teams that ship"
+        />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {items.map((f, i) => (
             <Reveal key={f.title} delay={i % 4}>

@@ -1,28 +1,29 @@
 "use client";
 import { Check, Sparkles } from "lucide-react";
 import { Reveal } from "./reveal";
+import { SectionHeader, type SectionMeta } from "./section-header";
 
 export function Pricing({
   plans,
   addons,
+  meta,
+  addonsMeta,
 }: {
   plans: Array<{ id: string; name: string; price: string; tagline: string | null; features: string[]; cta_label: string; highlighted: boolean }>;
   addons: Array<{ id: string; name: string; price: string }>;
+  meta?: SectionMeta;
+  addonsMeta?: SectionMeta;
 }) {
+  const addonsHeading = addonsMeta?.heading ?? "Additional Services";
   return (
     <section id="pricing" className="section relative">
       <div className="container-x">
-        <Reveal>
-          <div className="mx-auto mb-14 max-w-2xl text-center">
-            <div className="mb-3 inline-block rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-medium text-[#38BDF8]">
-              Pricing
-            </div>
-            <h2 className="font-display text-4xl font-bold sm:text-5xl">
-              <span className="text-gradient">Transparent pricing. Premium value.</span>
-            </h2>
-            <p className="mt-4 text-white/60">Choose a plan, or ask us for a custom quote.</p>
-          </div>
-        </Reveal>
+        <SectionHeader
+          meta={meta}
+          eyebrow="Pricing"
+          heading="Transparent pricing. Premium value."
+          subheading="Choose a plan, or ask us for a custom quote."
+        />
 
         <div className="grid gap-6 lg:grid-cols-3">
           {plans.map((p, i) => (
@@ -70,7 +71,7 @@ export function Pricing({
         {addons.length > 0 && (
           <Reveal>
             <div className="mt-16">
-              <h3 className="mb-6 text-center font-display text-2xl font-semibold text-white/80">Additional Services</h3>
+              <h3 className="mb-6 text-center font-display text-2xl font-semibold text-white/80">{addonsHeading}</h3>
               <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-7">
                 {addons.map((a) => (
                   <div
