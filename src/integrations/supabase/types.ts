@@ -299,6 +299,60 @@ export type Database = {
         }
         Relationships: []
       }
+      process_steps: {
+        Row: {
+          description: string
+          duration: string | null
+          id: string
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          description: string
+          duration?: string | null
+          id?: string
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          description?: string
+          duration?: string | null
+          id?: string
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      section_meta: {
+        Row: {
+          extra: string | null
+          eyebrow: string | null
+          heading: string | null
+          section: string
+          subheading: string | null
+          updated_at: string
+        }
+        Insert: {
+          extra?: string | null
+          eyebrow?: string | null
+          heading?: string | null
+          section: string
+          subheading?: string | null
+          updated_at?: string
+        }
+        Update: {
+          extra?: string | null
+          eyebrow?: string | null
+          heading?: string | null
+          section?: string
+          subheading?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       services: {
         Row: {
           created_at: string
@@ -383,6 +437,30 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      why_choose_us: {
+        Row: {
+          description: string
+          id: string
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          description: string
+          id?: string
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          description?: string
+          id?: string
+          sort_order?: number
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }

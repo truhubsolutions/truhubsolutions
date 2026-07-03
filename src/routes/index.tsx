@@ -58,6 +58,13 @@ function Index() {
   const about = data?.about ?? FALLBACK.about;
   const founder = data?.founder ?? FALLBACK.founder;
   const contact = data?.contact ?? FALLBACK.contact;
+  const meta = data?.meta ?? {};
+  const whyItems = (data?.whyChooseUs && data.whyChooseUs.length > 0)
+    ? data.whyChooseUs.map((w) => ({ title: w.title, desc: w.description }))
+    : WHY_CHOOSE_US;
+  const processItems = (data?.processSteps && data.processSteps.length > 0)
+    ? data.processSteps.map((s) => ({ title: s.title, desc: s.description, duration: s.duration ?? undefined }))
+    : PROCESS_STEPS;
 
   return (
     <div className="relative min-h-screen bg-background text-white">
@@ -73,23 +80,25 @@ function Index() {
         <About
           heading={about.heading}
           body={about.body}
+          meta={meta.about}
         />
-        <Services items={data?.services ?? []} />
+        <Services items={data?.services ?? []} meta={meta.services} />
 
-        <WhyChooseUs items={WHY_CHOOSE_US} />
-        <Pricing plans={data?.plans ?? []} addons={data?.addons ?? []} />
-        <Portfolio items={data?.portfolio ?? []} />
+        <WhyChooseUs items={whyItems} meta={meta.why} />
+        <Pricing plans={data?.plans ?? []} addons={data?.addons ?? []} meta={meta.pricing} addonsMeta={meta.addons} />
+        <Portfolio items={data?.portfolio ?? []} meta={meta.portfolio} />
         <Founder
           name={founder.name}
           title={founder.title}
           vision={founder.vision}
           skills={founder.skills}
           photoUrl={founder.photo_url}
+          meta={meta.founder}
         />
-        <Process steps={PROCESS_STEPS} />
-        <FAQ items={data?.faqs ?? []} />
+        <Process steps={processItems} meta={meta.process} />
+        <FAQ items={data?.faqs ?? []} meta={meta.faq} />
 
-        <Contact email={contact.email} phone={contact.phone} />
+        <Contact email={contact.email} phone={contact.phone} meta={meta.contact} />
       </main>
       <Footer email={contact.email} phone={contact.phone} />
       <FloatingWhatsApp number={contact.whatsapp} />

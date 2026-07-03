@@ -18,7 +18,7 @@ function publicClient() {
 // ---------- Public reads (used by public routes) ----------
 export const getSiteContent = createServerFn({ method: "GET" }).handler(async () => {
   const sb = publicClient();
-  const [hero, about, founder, services, plans, addons, portfolio, testimonials, faqs, contact] =
+  const [hero, about, founder, services, plans, addons, portfolio, testimonials, faqs, contact, sectionMeta, whyChooseUs, processSteps] =
     await Promise.all([
       sb.from("hero_content").select("*").limit(1).maybeSingle(),
       sb.from("about_content").select("*").limit(1).maybeSingle(),
@@ -30,7 +30,14 @@ export const getSiteContent = createServerFn({ method: "GET" }).handler(async ()
       sb.from("testimonials").select("*").order("sort_order"),
       sb.from("faqs").select("*").order("sort_order"),
       sb.from("contact_info").select("*").limit(1).maybeSingle(),
+      sb.from("section_meta").select("*"),
+      sb.from("why_choose_us").select("*").order("sort_order"),
+      sb.from("process_steps").select("*").order("sort_order"),
     ]);
+  const meta: Record<string, { eyebrow: string | null; heading: string | null; subheading: string | null; extra: string | null }> = {};
+  for (const r of sectionMeta.data ?? []) {
+    meta[r.section] = { eyebrow: r.eyebrow, heading: r.heading, subheading: r.subheading, extra: r.extra };
+  }
   return {
     hero: hero.data,
     about: about.data,
@@ -42,6 +49,9 @@ export const getSiteContent = createServerFn({ method: "GET" }).handler(async ()
     testimonials: testimonials.data ?? [],
     faqs: faqs.data ?? [],
     contact: contact.data,
+    meta,
+    whyChooseUs: whyChooseUs.data ?? [],
+    processSteps: processSteps.data ?? [],
   };
 });
 
@@ -134,6 +144,9 @@ const ADMIN_TABLES = [
   "testimonials",
   "faqs",
   "contact_info",
+  "section_meta",
+  "why_choose_us",
+  "process_steps",
 ] as const;
 type AdminTable = (typeof ADMIN_TABLES)[number];
 const tableSchema = z.enum(ADMIN_TABLES);
@@ -160,7 +173,7 @@ export const adminDelete = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await requireAdmin(context as never);
-    const { error } = await context.supabase.from(data.table as AdminTable).delete().eq("id", data.id);
+    const { error } = await context.supabase.from(data.table as AdminTable).delete().eq("id" as never, data.id);
     if (error) throw new Error(error.message);
     return { ok: true as const };
   });

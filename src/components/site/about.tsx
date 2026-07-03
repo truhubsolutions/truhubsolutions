@@ -1,29 +1,26 @@
 "use client";
 import { Reveal } from "./reveal";
+import { SectionHeader, type SectionMeta } from "./section-header";
 
 export function About({
   heading,
   body,
+  meta,
 }: {
   heading: string;
   body: string;
+  meta?: SectionMeta;
 }) {
+  const finalHeading = meta?.heading ?? heading;
+  const finalSub = meta?.subheading ?? body;
   return (
     <section id="about" className="section relative">
       <div className="container-x relative">
+        <SectionHeader meta={meta} eyebrow="About TruHub" heading={finalHeading} maxWidth="max-w-3xl" />
         <Reveal>
-          <div className="mx-auto max-w-3xl text-center">
-            <div className="mb-4 inline-block rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-medium text-[#38BDF8]">
-              About TruHub
-            </div>
-            <h2 className="font-display text-4xl font-bold leading-tight sm:text-5xl">
-              <span className="text-gradient">{heading}</span>
-            </h2>
-            <p className="mt-6 text-white/70">{body}</p>
-          </div>
+          <p className="mx-auto max-w-3xl text-center text-white/70">{finalSub}</p>
         </Reveal>
       </div>
     </section>
   );
 }
-
