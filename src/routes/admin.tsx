@@ -14,6 +14,10 @@ import {
 import { broadcastCmsUpdate } from "@/lib/cms-broadcast";
 import { DashboardOverview } from "@/components/admin/dashboard-overview";
 import { AnalyticsPanel } from "@/components/admin/analytics-panel";
+import { LeadsPanel } from "@/components/admin/leads-panel";
+import { ActivityPanel } from "@/components/admin/activity-panel";
+import { SecurityPanel } from "@/components/admin/security-panel";
+import { recordLoginAttempt } from "@/lib/security/security.functions";
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
@@ -178,10 +182,17 @@ function AuthCard({ onDone }: { onDone: () => void }) {
 
 // ==================== DASHBOARD ====================
 type Tab =
-  | "dashboard" | "analytics"
+  | "dashboard" | "analytics" | "leads" | "activity" | "security"
   | "sections" | "portfolio" | "services" | "why" | "pricing" | "addons" | "testimonials" | "faqs"
   | "hero" | "about" | "founder" | "process" | "contact" | "submissions" | "media"
   | "blog" | "settings";
+
+const TABS: { id: Tab; label: string }[] = [
+  { id: "dashboard", label: "Dashboard" },
+  { id: "analytics", label: "Analytics" },
+  { id: "leads", label: "Leads" },
+  { id: "activity", label: "Activity" },
+  { id: "security", label: "Security" },
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "dashboard", label: "Dashboard" },
