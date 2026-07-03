@@ -87,9 +87,16 @@ function Index() {
         <WhyChooseUs items={WHY_CHOOSE_US} />
         <Pricing plans={data?.plans ?? []} addons={data?.addons ?? []} />
         <Portfolio items={data?.portfolio ?? []} />
+        <Founder
+          name={founder.name}
+          title={founder.title}
+          vision={founder.vision}
+          skills={founder.skills}
+          photoUrl={founder.photo_url}
+        />
         <Process steps={PROCESS_STEPS} />
-        <Testimonials items={data?.testimonials ?? []} />
         <FAQ items={data?.faqs ?? []} />
+
         <Contact email={contact.email} phone={contact.phone} />
       </main>
       <Footer email={contact.email} phone={contact.phone} />
