@@ -14,7 +14,9 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 
 const SITE_TITLE = "TruHub Solutions — Build. Grow. Succeed.";
 const SITE_DESC =
-  "TruHub Solutions is a luxury technology agency crafting premium websites, branding, AI automation and digital solutions for ambitious businesses.";
+  "TruHub Solutions is a luxury tech agency crafting premium websites, branding, AI automation and digital solutions for ambitious brands.";
+const OG_IMAGE =
+  "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/c71bd585-7f02-4fa8-b82d-d88c06e7398a";
 
 function NotFoundComponent() {
   return (
