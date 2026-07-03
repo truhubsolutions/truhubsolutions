@@ -74,6 +74,135 @@ export type Database = {
         }
         Relationships: []
       }
+      analytics_events: {
+        Row: {
+          browser: string | null
+          city: string | null
+          country: string | null
+          created_at: string
+          device: string | null
+          duration_ms: number | null
+          event_type: string
+          id: number
+          ip_hash: string | null
+          meta: Json | null
+          os: string | null
+          path: string | null
+          referrer: string | null
+          screen_h: number | null
+          screen_w: number | null
+          scroll_depth: number | null
+          session_id: string | null
+          source: string | null
+          user_agent: string | null
+          visitor_id: string | null
+        }
+        Insert: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          device?: string | null
+          duration_ms?: number | null
+          event_type: string
+          id?: number
+          ip_hash?: string | null
+          meta?: Json | null
+          os?: string | null
+          path?: string | null
+          referrer?: string | null
+          screen_h?: number | null
+          screen_w?: number | null
+          scroll_depth?: number | null
+          session_id?: string | null
+          source?: string | null
+          user_agent?: string | null
+          visitor_id?: string | null
+        }
+        Update: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          device?: string | null
+          duration_ms?: number | null
+          event_type?: string
+          id?: number
+          ip_hash?: string | null
+          meta?: Json | null
+          os?: string | null
+          path?: string | null
+          referrer?: string | null
+          screen_h?: number | null
+          screen_w?: number | null
+          scroll_depth?: number | null
+          session_id?: string | null
+          source?: string | null
+          user_agent?: string | null
+          visitor_id?: string | null
+        }
+        Relationships: []
+      }
+      analytics_sessions: {
+        Row: {
+          browser: string | null
+          city: string | null
+          country: string | null
+          device: string | null
+          ended_at: string | null
+          entry_path: string | null
+          exit_path: string | null
+          is_bounce: boolean
+          is_returning: boolean
+          last_seen_at: string
+          os: string | null
+          page_count: number
+          referrer: string | null
+          session_id: string
+          source: string | null
+          started_at: string
+          visitor_id: string
+        }
+        Insert: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          device?: string | null
+          ended_at?: string | null
+          entry_path?: string | null
+          exit_path?: string | null
+          is_bounce?: boolean
+          is_returning?: boolean
+          last_seen_at?: string
+          os?: string | null
+          page_count?: number
+          referrer?: string | null
+          session_id: string
+          source?: string | null
+          started_at?: string
+          visitor_id: string
+        }
+        Update: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          device?: string | null
+          ended_at?: string | null
+          entry_path?: string | null
+          exit_path?: string | null
+          is_bounce?: boolean
+          is_returning?: boolean
+          last_seen_at?: string
+          os?: string | null
+          page_count?: number
+          referrer?: string | null
+          session_id?: string
+          source?: string | null
+          started_at?: string
+          visitor_id?: string
+        }
+        Relationships: []
+      }
       blog_posts: {
         Row: {
           body_md: string
