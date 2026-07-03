@@ -198,7 +198,7 @@ const TABS: { id: Tab; label: string }[] = [
 ];
 
 function Dashboard({ email, onSignOut }: { email: string; onSignOut: () => void }) {
-  const [tab, setTab] = useState<Tab>("portfolio");
+  const [tab, setTab] = useState<Tab>("sections");
   const qc = useQueryClient();
   const content = useQuery({ queryKey: ["admin-content"], queryFn: () => getSiteContent(), staleTime: 0 });
 
