@@ -139,7 +139,7 @@ export const getDashboardStats = createServerFn({ method: "GET" })
         sb.from("portfolio_items").select("*", { count: "exact", head: true }),
         sb.from("services").select("*", { count: "exact", head: true }),
         sb.from("testimonials").select("*", { count: "exact", head: true }),
-        sb.from("contact_submissions").select("id,name,email,service,created_at").order("created_at", { ascending: false }).limit(6),
+        sb.from("contact_submissions").select("id,name,email,business_name,created_at").order("created_at", { ascending: false }).limit(6),
       ]);
     return {
       visitorsToday: visitorsToday.count ?? 0,
