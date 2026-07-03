@@ -14,6 +14,10 @@ import {
 import { broadcastCmsUpdate } from "@/lib/cms-broadcast";
 import { DashboardOverview } from "@/components/admin/dashboard-overview";
 import { AnalyticsPanel } from "@/components/admin/analytics-panel";
+import { LeadsPanel } from "@/components/admin/leads-panel";
+import { ActivityPanel } from "@/components/admin/activity-panel";
+import { SecurityPanel } from "@/components/admin/security-panel";
+import { recordLoginAttempt } from "@/lib/security/security.functions";
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
@@ -138,6 +142,7 @@ function AuthCard({ onDone }: { onDone: () => void }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+  const logAttempt = useServerFn(recordLoginAttempt);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -145,7 +150,11 @@ function AuthCard({ onDone }: { onDone: () => void }) {
     try {
       if (mode === "in") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        if (error) {
+          logAttempt({ data: { email, success: false, failure_reason: error.message, user_agent: navigator.userAgent } }).catch(() => {});
+          throw error;
+        }
+        logAttempt({ data: { email, success: true, user_agent: navigator.userAgent } }).catch(() => {});
       } else {
         const { error } = await supabase.auth.signUp({
           email, password,
@@ -178,7 +187,7 @@ function AuthCard({ onDone }: { onDone: () => void }) {
 
 // ==================== DASHBOARD ====================
 type Tab =
-  | "dashboard" | "analytics"
+  | "dashboard" | "analytics" | "leads" | "activity" | "security"
   | "sections" | "portfolio" | "services" | "why" | "pricing" | "addons" | "testimonials" | "faqs"
   | "hero" | "about" | "founder" | "process" | "contact" | "submissions" | "media"
   | "blog" | "settings";
@@ -186,6 +195,9 @@ type Tab =
 const TABS: { id: Tab; label: string }[] = [
   { id: "dashboard", label: "Dashboard" },
   { id: "analytics", label: "Analytics" },
+  { id: "leads", label: "Leads" },
+  { id: "activity", label: "Activity" },
+  { id: "security", label: "Security" },
   { id: "sections", label: "Section Text" },
   { id: "hero", label: "Hero" },
   { id: "about", label: "About" },
@@ -201,7 +213,7 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "contact", label: "Contact Info" },
   { id: "blog", label: "Blog" },
   { id: "settings", label: "Settings" },
-  { id: "submissions", label: "Submissions" },
+  { id: "submissions", label: "Submissions (legacy)" },
   { id: "media", label: "Media" },
 ];
 
@@ -239,8 +251,11 @@ function Dashboard({ email, onSignOut }: { email: string; onSignOut: () => void 
       <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-6">
         {tab === "dashboard" && <DashboardOverview onNavigate={(t) => setTab(t as Tab)} />}
         {tab === "analytics" && <AnalyticsPanel />}
-        {content.isLoading && tab !== "dashboard" && tab !== "analytics" && <Loader2 className="animate-spin text-[#38BDF8]" />}
-        {content.data && tab !== "dashboard" && tab !== "analytics" && (
+        {tab === "leads" && <LeadsPanel />}
+        {tab === "activity" && <ActivityPanel />}
+        {tab === "security" && <SecurityPanel />}
+        {content.isLoading && !["dashboard","analytics","leads","activity","security"].includes(tab) && <Loader2 className="animate-spin text-[#38BDF8]" />}
+        {content.data && !["dashboard","analytics","leads","activity","security"].includes(tab) && (
           <>
             {tab === "portfolio" && (
               <ListEditor table="portfolio_items" title="Portfolio" rows={content.data.portfolio}
