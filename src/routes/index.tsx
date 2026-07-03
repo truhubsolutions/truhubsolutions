@@ -48,6 +48,11 @@ const FALLBACK = {
 };
 
 function Index() {
+  const qc = useQueryClient();
+  useEffect(
+    () => subscribeToCmsUpdates(() => qc.invalidateQueries({ queryKey: ["site-content"] })),
+    [qc],
+  );
   const { data } = useSiteContent();
   const hero = data?.hero ?? FALLBACK.hero;
   const about = data?.about ?? FALLBACK.about;
