@@ -63,7 +63,7 @@ export function DashboardOverview({ onNavigate }: { onNavigate: (tab: string) =>
                     <li key={r.id} className="flex items-center justify-between py-2 text-sm">
                       <div className="min-w-0">
                         <div className="truncate text-white">{r.name}</div>
-                        <div className="truncate text-xs text-white/50">{r.email} {r.service ? `• ${r.service}` : ""}</div>
+                        <div className="truncate text-xs text-white/50">{r.email}{r.business_name ? ` • ${r.business_name}` : ""}</div>
                       </div>
                       <div className="shrink-0 text-xs text-white/40">{formatDistanceToNow(new Date(r.created_at as string), { addSuffix: true })}</div>
                     </li>
