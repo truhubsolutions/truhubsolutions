@@ -1,6 +1,6 @@
 "use client";
 import { motion, type Variants } from "framer-motion";
-import type { ReactNode } from "react";
+import { useMemo, type ReactNode } from "react";
 
 const variants: Variants = {
   hidden: { opacity: 0, y: 30, filter: "blur(8px)" },
@@ -12,10 +12,24 @@ const variants: Variants = {
   }),
 };
 
+// Cache motion(As) per element type. Calling motion() inside the component
+// body creates a brand-new component identity on every render, which makes
+// React unmount + remount the entire subtree — resetting form input focus
+// and replaying the reveal animation on every keystroke.
+const motionCache = new Map<React.ElementType, ReturnType<typeof motion>>();
+function getMotion(as: React.ElementType) {
+  let m = motionCache.get(as);
+  if (!m) {
+    m = motion.create(as);
+    motionCache.set(as, m);
+  }
+  return m;
+}
+
 export function Reveal({
   children,
   delay = 0,
-  as: As = "div",
+  as = "div",
   className,
 }: {
   children: ReactNode;
@@ -23,7 +37,7 @@ export function Reveal({
   as?: React.ElementType;
   className?: string;
 }) {
-  const MotionAs = motion(As);
+  const MotionAs = useMemo(() => getMotion(as), [as]);
   return (
     <MotionAs
       className={className}
@@ -37,3 +51,4 @@ export function Reveal({
     </MotionAs>
   );
 }
+
