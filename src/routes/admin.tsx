@@ -595,3 +595,87 @@ function MediaPanel() {
     </div>
   );
 }
+
+// ==================== SECTION META PANEL ====================
+const SECTION_LIST: { key: string; label: string; hasSub?: boolean }[] = [
+  { key: "about", label: "About", hasSub: false },
+  { key: "services", label: "Services", hasSub: true },
+  { key: "why", label: "Why Choose Us", hasSub: false },
+  { key: "pricing", label: "Pricing", hasSub: true },
+  { key: "addons", label: "Add-ons Heading", hasSub: false },
+  { key: "portfolio", label: "Portfolio", hasSub: false },
+  { key: "founder", label: "Founder", hasSub: false },
+  { key: "process", label: "Process", hasSub: true },
+  { key: "faq", label: "FAQ", hasSub: false },
+  { key: "contact", label: "Contact", hasSub: true },
+];
+
+function SectionMetaPanel({
+  meta,
+  onChanged,
+}: {
+  meta: Record<string, { eyebrow: string | null; heading: string | null; subheading: string | null; extra: string | null }>;
+  onChanged: () => void;
+}) {
+  const upsert = useServerFn(adminUpsert);
+  const [rows, setRows] = useState(() =>
+    Object.fromEntries(SECTION_LIST.map((s) => [s.key, meta[s.key] ?? { eyebrow: "", heading: "", subheading: "", extra: "" }])),
+  );
+  useEffect(() => {
+    setRows(Object.fromEntries(SECTION_LIST.map((s) => [s.key, meta[s.key] ?? { eyebrow: "", heading: "", subheading: "", extra: "" }])));
+  }, [meta]);
+
+  async function save(key: string) {
+    try {
+      const r = rows[key];
+      await upsert({
+        data: {
+          table: "section_meta" as never,
+          row: { section: key, eyebrow: r.eyebrow || null, heading: r.heading || null, subheading: r.subheading || null } as never,
+        },
+      });
+      toast.success(`Saved "${key}"`);
+      onChanged();
+      broadcastCmsUpdate();
+    } catch (err) { toast.error(err instanceof Error ? err.message : "Save failed"); }
+  }
+
+  const input = "w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm outline-none focus:border-[#38BDF8]";
+
+  return (
+    <div>
+      <div className="mb-5">
+        <h2 className="font-display text-xl font-semibold">Section Text</h2>
+        <p className="mt-1 text-xs text-white/50">Edit the eyebrow tag, main heading, and subheading shown at the top of each site section.</p>
+      </div>
+      <div className="space-y-4">
+        {SECTION_LIST.map((s) => {
+          const r = rows[s.key];
+          return (
+            <div key={s.key} className="rounded-2xl border border-white/10 bg-white/[0.02] p-5">
+              <div className="mb-3 flex items-center justify-between">
+                <div className="font-display font-semibold">{s.label}</div>
+                <button onClick={() => save(s.key)} className="btn-primary btn-primary-hover !py-1.5 !text-xs">Save</button>
+              </div>
+              <div className="grid gap-3 md:grid-cols-3">
+                <div>
+                  <label className="mb-1 block text-[10px] uppercase tracking-wider text-white/50">Eyebrow tag</label>
+                  <input className={input} value={r.eyebrow ?? ""} onChange={(e) => setRows({ ...rows, [s.key]: { ...r, eyebrow: e.target.value } })} />
+                </div>
+                <div>
+                  <label className="mb-1 block text-[10px] uppercase tracking-wider text-white/50">Heading</label>
+                  <input className={input} value={r.heading ?? ""} onChange={(e) => setRows({ ...rows, [s.key]: { ...r, heading: e.target.value } })} />
+                </div>
+                <div>
+                  <label className="mb-1 block text-[10px] uppercase tracking-wider text-white/50">Subheading</label>
+                  <input className={input} value={r.subheading ?? ""} onChange={(e) => setRows({ ...rows, [s.key]: { ...r, subheading: e.target.value } })} />
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
