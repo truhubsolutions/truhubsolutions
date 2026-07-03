@@ -11,6 +11,7 @@ const LINKS = [
   { href: "/#portfolio", label: "Portfolio" },
   { href: "/blog", label: "Blog" },
   { href: "/#contact", label: "Contact" },
+  { href: "/portal", label: "Client Portal" },
 ];
 
 export function Navbar() {
