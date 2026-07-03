@@ -42,13 +42,13 @@ export function Contact({ email, phone, meta }: { email: string; phone: string; 
           <Reveal>
             <div>
               <div className="mb-3 inline-block rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-medium text-[#38BDF8]">
-                Contact
+                {meta?.eyebrow ?? "Contact"}
               </div>
               <h2 className="font-display text-4xl font-bold sm:text-5xl">
-                <span className="text-gradient">Let's build something premium.</span>
+                <span className="text-gradient">{meta?.heading ?? "Let's build something premium."}</span>
               </h2>
               <p className="mt-4 text-white/70">
-                Tell us about your project. We reply within 24 hours with a plan and a quote.
+                {meta?.subheading ?? "Tell us about your project. We reply within 24 hours with a plan and a quote."}
               </p>
               <div className="mt-8 space-y-3">
                 <a
