@@ -478,7 +478,7 @@ function SingleEditor({ table, title, row, fields, onChanged }: {
   const [state, setState] = useState<Record<string, unknown>>(row ?? {});
   useEffect(() => { setState(row ?? {}); }, [row]);
   async function save() {
-    try { await upsert({ data: { table: table as never, row: state as never } }); toast.success("Saved"); onChanged(); }
+    try { await upsert({ data: { table: table as never, row: state as never } }); toast.success("Saved"); onChanged(); broadcastCmsUpdate(); }
     catch (err) { toast.error(err instanceof Error ? err.message : "Save failed"); }
   }
   return (
