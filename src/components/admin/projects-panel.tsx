@@ -59,7 +59,7 @@ export function ProjectsPanel() {
 
         {projects.isLoading ? <Loader2 className="mx-auto mt-6 animate-spin text-white/40" /> : (
           <div className="mt-4 space-y-2">
-            {(projects.data ?? []).map((p: Project & { id: string }) => (
+            {(projects.data ?? []).map((p: any) => (
               <div key={p.id} className="rounded-xl border border-white/10 bg-[#111827] p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
@@ -143,7 +143,7 @@ function ProjectSubpanel({ projectId, clientId }: { projectId: string; clientId:
   const files = useQuery({ queryKey: ["proj-files", projectId], queryFn: () => listFiles({ data: { project_id: projectId } }) });
   const invoices = useQuery({ queryKey: ["proj-invoices", projectId], queryFn: async () => {
     const all = await listInv();
-    return all.filter((i: { project_id: string | null }) => i.project_id === projectId);
+    return all.filter((i: any) => i.project_id === projectId);
   } });
 
   async function onFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -206,7 +206,7 @@ function ProjectSubpanel({ projectId, clientId }: { projectId: string; clientId:
       <div>
         <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-white/60 flex items-center gap-1.5"><CreditCard size={12} /> Invoices</h4>
         <ul className="space-y-1">
-          {(invoices.data ?? []).map((i: { id: string; number?: string; amount_cents: number; currency: string; status: string; due_date?: string | null }) => (
+          {(invoices.data ?? []).map((i: any) => (
             <li key={i.id} className="flex items-center justify-between rounded-lg border border-white/10 px-2 py-1.5 text-xs">
               <div>
                 <span className="font-mono">{i.number || i.id.slice(0, 6)}</span>
