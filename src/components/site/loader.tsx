@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import logoAsset from "@/assets/truhub-logo.png.asset.json";
+const logoAsset = { url: "/truhub-logo.png" };
 
 export function SiteLoader() {
   const [show, setShow] = useState(true);
