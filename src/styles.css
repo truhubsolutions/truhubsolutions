@@ -149,7 +149,7 @@
 @utility card-premium {
   background: linear-gradient(180deg, rgba(17,24,39,0.85) 0%, rgba(11,18,32,0.75) 100%);
   border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 1.25rem;
+  border-radius: 1.75rem;
   backdrop-filter: blur(18px);
   transition: transform .5s cubic-bezier(.2,.8,.2,1), border-color .3s, box-shadow .5s;
 }
