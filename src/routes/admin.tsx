@@ -142,6 +142,7 @@ function AuthCard({ onDone }: { onDone: () => void }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+  const logAttempt = useServerFn(recordLoginAttempt);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -149,7 +150,11 @@ function AuthCard({ onDone }: { onDone: () => void }) {
     try {
       if (mode === "in") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        if (error) {
+          logAttempt({ data: { email, success: false, failure_reason: error.message, user_agent: navigator.userAgent } }).catch(() => {});
+          throw error;
+        }
+        logAttempt({ data: { email, success: true, user_agent: navigator.userAgent } }).catch(() => {});
       } else {
         const { error } = await supabase.auth.signUp({
           email, password,
