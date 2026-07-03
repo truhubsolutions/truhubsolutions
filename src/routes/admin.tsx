@@ -11,6 +11,7 @@ import {
   adminListSubmissions, adminDeleteSubmission, adminListMedia,
   getSiteContent,
 } from "@/lib/cms.functions";
+import { broadcastCmsUpdate } from "@/lib/cms-broadcast";
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
@@ -419,11 +420,12 @@ function ListEditor({ table, title, rows, fields, onChanged }: {
       toast.success("Saved");
       setEditing(null);
       onChanged();
+      broadcastCmsUpdate();
     } catch (err) { toast.error(err instanceof Error ? err.message : "Save failed"); }
   }
   async function remove(id: string) {
     if (!confirm("Delete this item?")) return;
-    try { await del({ data: { table: table as never, id } }); toast.success("Deleted"); onChanged(); }
+    try { await del({ data: { table: table as never, id } }); toast.success("Deleted"); onChanged(); broadcastCmsUpdate(); }
     catch (err) { toast.error(err instanceof Error ? err.message : "Delete failed"); }
   }
 
@@ -476,7 +478,7 @@ function SingleEditor({ table, title, row, fields, onChanged }: {
   const [state, setState] = useState<Record<string, unknown>>(row ?? {});
   useEffect(() => { setState(row ?? {}); }, [row]);
   async function save() {
-    try { await upsert({ data: { table: table as never, row: state as never } }); toast.success("Saved"); onChanged(); }
+    try { await upsert({ data: { table: table as never, row: state as never } }); toast.success("Saved"); onChanged(); broadcastCmsUpdate(); }
     catch (err) { toast.error(err instanceof Error ? err.message : "Save failed"); }
   }
   return (
