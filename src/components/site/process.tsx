@@ -11,27 +11,21 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Reveal } from "./reveal";
+import { SectionHeader, type SectionMeta } from "./section-header";
 
 const ICONS: LucideIcon[] = [Compass, ClipboardList, Palette, Code2, ShieldCheck, Rocket];
-const DURATIONS = ["1–3 days", "2–4 days", "4–7 days", "5–10 days", "2–3 days", "1 day"];
+const DEFAULT_DURATIONS = ["1–3 days", "2–4 days", "4–7 days", "5–10 days", "2–3 days", "1 day"];
 
-export function Process({ steps }: { steps: Array<{ title: string; desc: string }> }) {
+export function Process({ steps, meta }: { steps: Array<{ title: string; desc: string; duration?: string }>; meta?: SectionMeta }) {
   return (
     <section id="process" className="section relative">
       <div className="container-x">
-        <Reveal>
-          <div className="mx-auto mb-14 max-w-2xl text-center">
-            <div className="mb-3 inline-block rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-medium text-[#38BDF8]">
-              How we work
-            </div>
-            <h2 className="font-display text-4xl font-bold sm:text-5xl">
-              <span className="text-gradient">A simple, transparent journey</span>
-            </h2>
-            <p className="mt-4 text-white/60">
-              Six friendly steps from your first idea to a launched, growing product — no jargon, no surprises.
-            </p>
-          </div>
-        </Reveal>
+        <SectionHeader
+          meta={meta}
+          eyebrow="How we work"
+          heading="A simple, transparent journey"
+          subheading="Six friendly steps from your first idea to a launched, growing product — no jargon, no surprises."
+        />
 
         <div className="mx-auto grid max-w-6xl gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {steps.map((s, i) => {
