@@ -20,7 +20,12 @@ import { SecurityPanel } from "@/components/admin/security-panel";
 import { SeoPanel } from "@/components/admin/seo-panel";
 import { RedirectsPanel } from "@/components/admin/redirects-panel";
 import { MediaLibraryPanel } from "@/components/admin/media-library-panel";
+import { UsersRolesPanel } from "@/components/admin/users-roles-panel";
+import { ProjectsPanel } from "@/components/admin/projects-panel";
+import { BackupsPanel } from "@/components/admin/backups-panel";
+import { CommandPalette } from "@/components/admin/command-palette";
 import { recordLoginAttempt } from "@/lib/security/security.functions";
+
 
 
 export const Route = createFileRoute("/admin")({
@@ -192,6 +197,7 @@ function AuthCard({ onDone }: { onDone: () => void }) {
 // ==================== DASHBOARD ====================
 type Tab =
   | "dashboard" | "analytics" | "leads" | "activity" | "security"
+  | "users" | "projects" | "backups"
   | "sections" | "portfolio" | "services" | "why" | "pricing" | "addons" | "testimonials" | "faqs"
   | "hero" | "about" | "founder" | "process" | "contact" | "submissions" | "media"
   | "blog" | "settings" | "seo" | "redirects" | "media-library";
@@ -200,8 +206,11 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "dashboard", label: "Dashboard" },
   { id: "analytics", label: "Analytics" },
   { id: "leads", label: "Leads" },
+  { id: "projects", label: "Projects" },
+  { id: "users", label: "Users & Roles" },
   { id: "activity", label: "Activity" },
   { id: "security", label: "Security" },
+  { id: "backups", label: "Backups" },
   { id: "sections", label: "Section Text" },
   { id: "hero", label: "Hero" },
   { id: "about", label: "About" },
@@ -223,6 +232,9 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "submissions", label: "Submissions (legacy)" },
   { id: "media", label: "Media (legacy)" },
 ];
+
+const NEW_TABS = ["dashboard","analytics","leads","activity","security","seo","redirects","media-library","users","projects","backups"];
+
 
 
 function Dashboard({ email, onSignOut }: { email: string; onSignOut: () => void }) {
@@ -265,8 +277,12 @@ function Dashboard({ email, onSignOut }: { email: string; onSignOut: () => void 
         {tab === "seo" && <SeoPanel />}
         {tab === "redirects" && <RedirectsPanel />}
         {tab === "media-library" && <MediaLibraryPanel />}
-        {content.isLoading && !["dashboard","analytics","leads","activity","security","seo","redirects","media-library"].includes(tab) && <Loader2 className="animate-spin text-[#38BDF8]" />}
-        {content.data && !["dashboard","analytics","leads","activity","security","seo","redirects","media-library"].includes(tab) && (
+        {tab === "users" && <UsersRolesPanel />}
+        {tab === "projects" && <ProjectsPanel />}
+        {tab === "backups" && <BackupsPanel />}
+        {content.isLoading && !NEW_TABS.includes(tab) && <Loader2 className="animate-spin text-[#38BDF8]" />}
+        {content.data && !NEW_TABS.includes(tab) && (
+
 
           <>
             {tab === "portfolio" && (
@@ -419,9 +435,11 @@ function Dashboard({ email, onSignOut }: { email: string; onSignOut: () => void 
           </>
         )}
       </div>
+      <CommandPalette actions={TABS.map(t => ({ id: t.id, label: t.label, hint: "tab", run: () => setTab(t.id) }))} />
     </div>
   );
 }
+
 
 // ==================== FIELDS ====================
 type Field = { key: string; label: string; required?: boolean;
