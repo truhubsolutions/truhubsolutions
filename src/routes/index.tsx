@@ -19,8 +19,33 @@ import { FloatingWhatsApp } from "@/components/site/whatsapp";
 import { WHY_CHOOSE_US, PROCESS_STEPS } from "@/lib/site-data";
 
 
+const SITE_URL = "https://truhubsolutions.lovable.app";
+
 export const Route = createFileRoute("/")({
   loader: ({ context }) => context.queryClient.ensureQueryData(siteContentQuery),
+  head: ({ loaderData }) => {
+    const faqs = (loaderData as { faqs?: Array<{ question: string; answer: string }> } | undefined)?.faqs ?? [];
+    const scripts: Array<{ type: string; children: string }> = [];
+    if (faqs.length > 0) {
+      scripts.push({
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faqs.map((f) => ({
+            "@type": "Question",
+            name: f.question,
+            acceptedAnswer: { "@type": "Answer", text: f.answer },
+          })),
+        }),
+      });
+    }
+    return {
+      meta: [{ property: "og:url", content: `${SITE_URL}/` }],
+      links: [{ rel: "canonical", href: `${SITE_URL}/` }],
+      scripts,
+    };
+  },
   component: Index,
 });
 

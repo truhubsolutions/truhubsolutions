@@ -14,7 +14,9 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 
 const SITE_TITLE = "TruHub Solutions — Build. Grow. Succeed.";
 const SITE_DESC =
-  "TruHub Solutions is a luxury technology agency crafting premium websites, branding, AI automation and digital solutions for ambitious businesses.";
+  "TruHub Solutions is a luxury tech agency crafting premium websites, branding, AI automation and digital solutions for ambitious brands.";
+const OG_IMAGE =
+  "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/c71bd585-7f02-4fa8-b82d-d88c06e7398a";
 
 function NotFoundComponent() {
   return (
@@ -69,17 +71,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:description", content: SITE_DESC },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "TruHub Solutions" },
+      { property: "og:image", content: OG_IMAGE },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: SITE_TITLE },
       { name: "twitter:description", content: SITE_DESC },
-      { title: "TruHub-Solutions" },
-      { property: "og:title", content: "TruHub-Solutions" },
-      { name: "twitter:title", content: "TruHub-Solutions" },
-      { name: "description", content: "TruHub Solutions delivers premium websites, branding, UI/UX, and digital solutions that help businesses establish a powerful online presence, attract customers," },
-      { property: "og:description", content: "TruHub Solutions delivers premium websites, branding, UI/UX, and digital solutions that help businesses establish a powerful online presence, attract customers," },
-      { name: "twitter:description", content: "TruHub Solutions delivers premium websites, branding, UI/UX, and digital solutions that help businesses establish a powerful online presence, attract customers," },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/c71bd585-7f02-4fa8-b82d-d88c06e7398a" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/c71bd585-7f02-4fa8-b82d-d88c06e7398a" },
+      { name: "twitter:image", content: OG_IMAGE },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -90,7 +86,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap",
       },
-      { rel: "canonical", href: "/" },
     ],
     scripts: [
       {
