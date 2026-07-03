@@ -5,8 +5,9 @@ import { Mail, Phone, Send } from "lucide-react";
 import { toast } from "sonner";
 import { Reveal } from "./reveal";
 import { submitContactForm } from "@/lib/cms.functions";
+import type { SectionMeta } from "./section-header";
 
-export function Contact({ email, phone }: { email: string; phone: string }) {
+export function Contact({ email, phone, meta }: { email: string; phone: string; meta?: SectionMeta }) {
   const submit = useServerFn(submitContactForm);
   const [pending, setPending] = useState(false);
   const [form, setForm] = useState({
