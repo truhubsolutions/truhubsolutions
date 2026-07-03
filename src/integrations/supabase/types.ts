@@ -571,6 +571,123 @@ export type Database = {
         }
         Relationships: []
       }
+      media_files: {
+        Row: {
+          alt_text: string | null
+          created_at: string
+          folder: string
+          height: number | null
+          id: string
+          mime_type: string | null
+          size_bytes: number | null
+          storage_path: string | null
+          tags: string[]
+          updated_at: string
+          uploaded_by: string | null
+          url: string
+          width: number | null
+        }
+        Insert: {
+          alt_text?: string | null
+          created_at?: string
+          folder?: string
+          height?: number | null
+          id?: string
+          mime_type?: string | null
+          size_bytes?: number | null
+          storage_path?: string | null
+          tags?: string[]
+          updated_at?: string
+          uploaded_by?: string | null
+          url: string
+          width?: number | null
+        }
+        Update: {
+          alt_text?: string | null
+          created_at?: string
+          folder?: string
+          height?: number | null
+          id?: string
+          mime_type?: string | null
+          size_bytes?: number | null
+          storage_path?: string | null
+          tags?: string[]
+          updated_at?: string
+          uploaded_by?: string | null
+          url?: string
+          width?: number | null
+        }
+        Relationships: []
+      }
+      not_found_log: {
+        Row: {
+          created_at: string
+          hit_count: number
+          id: string
+          last_seen_at: string
+          path: string
+          referrer: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          hit_count?: number
+          id?: string
+          last_seen_at?: string
+          path: string
+          referrer?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          hit_count?: number
+          id?: string
+          last_seen_at?: string
+          path?: string
+          referrer?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
+      page_seo: {
+        Row: {
+          canonical: string | null
+          created_at: string
+          description: string | null
+          id: string
+          meta: Json
+          noindex: boolean
+          og_image: string | null
+          path: string
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          canonical?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          meta?: Json
+          noindex?: boolean
+          og_image?: string | null
+          path: string
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          canonical?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          meta?: Json
+          noindex?: boolean
+          og_image?: string | null
+          path?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       portfolio_items: {
         Row: {
           category: string
@@ -676,6 +793,36 @@ export type Database = {
         }
         Relationships: []
       }
+      redirects: {
+        Row: {
+          created_at: string
+          enabled: boolean
+          from_path: string
+          id: string
+          status_code: number
+          to_path: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          enabled?: boolean
+          from_path: string
+          id?: string
+          status_code?: number
+          to_path: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          enabled?: boolean
+          from_path?: string
+          id?: string
+          status_code?: number
+          to_path?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       section_meta: {
         Row: {
           extra: string | null
@@ -735,29 +882,65 @@ export type Database = {
       }
       site_settings: {
         Row: {
+          announcement: string | null
           chatbot_enabled: boolean
           chatbot_kb_extra: string
           created_at: string
+          custom_css: string | null
+          custom_js: string | null
+          favicon_url: string | null
+          footer_html: string | null
+          ga4_id: string | null
+          gtm_id: string | null
           id: boolean
+          logo_url: string | null
+          maintenance_mode: boolean
+          meta_pixel_id: string | null
           notification_email: string | null
+          social_links: Json
+          theme_colors: Json
           updated_at: string
           whatsapp_enabled: boolean
         }
         Insert: {
+          announcement?: string | null
           chatbot_enabled?: boolean
           chatbot_kb_extra?: string
           created_at?: string
+          custom_css?: string | null
+          custom_js?: string | null
+          favicon_url?: string | null
+          footer_html?: string | null
+          ga4_id?: string | null
+          gtm_id?: string | null
           id?: boolean
+          logo_url?: string | null
+          maintenance_mode?: boolean
+          meta_pixel_id?: string | null
           notification_email?: string | null
+          social_links?: Json
+          theme_colors?: Json
           updated_at?: string
           whatsapp_enabled?: boolean
         }
         Update: {
+          announcement?: string | null
           chatbot_enabled?: boolean
           chatbot_kb_extra?: string
           created_at?: string
+          custom_css?: string | null
+          custom_js?: string | null
+          favicon_url?: string | null
+          footer_html?: string | null
+          ga4_id?: string | null
+          gtm_id?: string | null
           id?: boolean
+          logo_url?: string | null
+          maintenance_mode?: boolean
+          meta_pixel_id?: string | null
           notification_email?: string | null
+          social_links?: Json
+          theme_colors?: Json
           updated_at?: string
           whatsapp_enabled?: boolean
         }
