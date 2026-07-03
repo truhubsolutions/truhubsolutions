@@ -76,14 +76,8 @@ function Index() {
             support: about.stat_support,
           }}
         />
-        <Founder
-          name={founder.name}
-          title={founder.title}
-          vision={founder.vision}
-          skills={founder.skills}
-          photoUrl={founder.photo_url}
-        />
         <Services items={data?.services ?? []} />
+
         <WhyChooseUs items={WHY_CHOOSE_US} />
         <Pricing plans={data?.plans ?? []} addons={data?.addons ?? []} />
         <Portfolio items={data?.portfolio ?? []} />
