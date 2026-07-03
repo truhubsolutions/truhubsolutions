@@ -1,8 +1,10 @@
 "use client";
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { ArrowRight, ChevronDown, Sparkles } from "lucide-react";
+import { ArrowRight, ChevronDown } from "lucide-react";
 import { Aurora, Grid, Particles } from "./aurora";
+import truhubLogo from "@/assets/truhub-logo.png.asset.json";
+
 
 export function Hero({
   headline,
