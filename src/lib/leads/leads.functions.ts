@@ -2,7 +2,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-async function requireAdmin(ctx: { supabase: { from: (t: string) => { select: (s: string) => { eq: (c: string, v: string) => { eq: (c: string, v: string) => { maybeSingle: () => Promise<{ data: unknown; error: unknown }> } } } } }; userId: string }) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function requireAdmin(ctx: any) {
   const { data } = await ctx.supabase
     .from("user_roles")
     .select("role")
@@ -12,14 +13,8 @@ async function requireAdmin(ctx: { supabase: { from: (t: string) => { select: (s
   if (!data) throw new Error("Forbidden: admin only");
 }
 
-async function logActivity(
-  ctx: { supabase: ReturnType<typeof import("@supabase/supabase-js").createClient>; userId: string; claims: { email?: string } },
-  action: string,
-  entityType: string,
-  entityId: string,
-  oldData: unknown = null,
-  newData: unknown = null,
-) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function logActivity(ctx: any, action: string, entityType: string, entityId: string, oldData: unknown = null, newData: unknown = null) {
   try {
     await ctx.supabase.from("activity_logs").insert({
       actor_id: ctx.userId,
@@ -27,8 +22,8 @@ async function logActivity(
       action,
       entity_type: entityType,
       entity_id: entityId,
-      old_data: oldData as never,
-      new_data: newData as never,
+      old_data: oldData,
+      new_data: newData,
     });
   } catch (e) {
     console.warn("[activity] log failed", e);

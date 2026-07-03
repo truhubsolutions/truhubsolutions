@@ -2,7 +2,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-async function requireAdmin(ctx: { supabase: { from: (t: string) => { select: (s: string) => { eq: (c: string, v: string) => { eq: (c: string, v: string) => { maybeSingle: () => Promise<{ data: unknown; error: unknown }> } } } } }; userId: string }) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function requireAdmin(ctx: any) {
   const { data } = await ctx.supabase
     .from("user_roles")
     .select("role")
