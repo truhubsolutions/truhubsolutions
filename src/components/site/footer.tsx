@@ -1,4 +1,7 @@
-import { Instagram, Linkedin, Twitter } from "lucide-react";
+import { Globe, Mail as MailIcon, MessageCircle } from "lucide-react";
+const Instagram = Globe;
+const Linkedin = MailIcon;
+const Twitter = MessageCircle;
 import logoAsset from "@/assets/truhub-logo.png.asset.json";
 
 export function Footer({ email, phone }: { email: string; phone: string }) {
