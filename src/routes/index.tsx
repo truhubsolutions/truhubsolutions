@@ -32,10 +32,6 @@ const FALLBACK = {
   about: {
     heading: "A luxury technology studio for ambitious brands.",
     body: "TruHub Solutions crafts premium digital experiences that convert.",
-    stat_projects: 120,
-    stat_clients: 80,
-    stat_satisfaction: 99,
-    stat_support: "24/7",
   },
   founder: {
     name: "Jayanth Gone",
@@ -69,12 +65,6 @@ function Index() {
         <About
           heading={about.heading}
           body={about.body}
-          stats={{
-            projects: about.stat_projects,
-            clients: about.stat_clients,
-            satisfaction: about.stat_satisfaction,
-            support: about.stat_support,
-          }}
         />
         <Services items={data?.services ?? []} />
 
