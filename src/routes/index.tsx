@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { subscribeToCmsUpdates } from "@/lib/cms-broadcast";
 import { siteContentQuery, useSiteContent } from "@/hooks/use-cms";
+import { getSiteSettings } from "@/lib/cms.functions";
 import { SiteLoader } from "@/components/site/loader";
 import { Navbar } from "@/components/site/navbar";
 import { Hero } from "@/components/site/hero";
@@ -16,6 +17,7 @@ import { FAQ } from "@/components/site/faq";
 import { Contact } from "@/components/site/contact";
 import { Footer } from "@/components/site/footer";
 import { FloatingWhatsApp } from "@/components/site/whatsapp";
+import { ChatWidget } from "@/components/site/chat-widget";
 import { WHY_CHOOSE_US, PROCESS_STEPS } from "@/lib/site-data";
 
 
@@ -79,6 +81,7 @@ function Index() {
     [qc],
   );
   const { data } = useSiteContent();
+  const { data: settings } = useQuery({ queryKey: ["site-settings"], queryFn: () => getSiteSettings() });
   const hero = data?.hero ?? FALLBACK.hero;
   const about = data?.about ?? FALLBACK.about;
   const founder = data?.founder ?? FALLBACK.founder;
@@ -126,7 +129,8 @@ function Index() {
         <Contact email={contact.email} phone={contact.phone} meta={meta.contact} />
       </main>
       <Footer email={contact.email} phone={contact.phone} />
-      <FloatingWhatsApp number={contact.whatsapp} />
+      {(settings?.whatsapp_enabled ?? true) && <FloatingWhatsApp number={contact.whatsapp} />}
+      <ChatWidget />
     </div>
   );
 }

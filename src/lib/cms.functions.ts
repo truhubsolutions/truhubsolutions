@@ -63,6 +63,10 @@ const submissionSchema = z.object({
   project_details: z.string().min(5).max(4000),
 });
 
+function escapeHtml(s: string) {
+  return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
+}
+
 export const submitContactForm = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => submissionSchema.parse(d))
   .handler(async ({ data }) => {
@@ -75,8 +79,96 @@ export const submitContactForm = createServerFn({ method: "POST" })
       project_details: data.project_details,
     });
     if (error) throw new Error(error.message);
+    // Fire-and-forget email notification via Resend connector (if configured)
+    try {
+      const { data: settings } = await sb.from("site_settings").select("notification_email").eq("id", true).maybeSingle();
+      const to = settings?.notification_email;
+      const resendKey = process.env.RESEND_API_KEY;
+      const lovableKey = process.env.LOVABLE_API_KEY;
+      if (to && resendKey && lovableKey) {
+        await fetch("https://connector-gateway.lovable.dev/resend/emails", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${lovableKey}`,
+            "X-Connection-Api-Key": resendKey,
+          },
+          body: JSON.stringify({
+            from: "TruHub <onboarding@resend.dev>",
+            to: [to],
+            subject: `New inquiry from ${data.name}`,
+            html: `<h2>New contact submission</h2>
+              <p><b>Name:</b> ${escapeHtml(data.name)}</p>
+              <p><b>Email:</b> ${escapeHtml(data.email)}</p>
+              <p><b>Phone:</b> ${escapeHtml(data.phone ?? "—")}</p>
+              <p><b>Business:</b> ${escapeHtml(data.business_name ?? "—")}</p>
+              <p><b>Message:</b><br/>${escapeHtml(data.project_details).replace(/\n/g, "<br/>")}</p>`,
+          }),
+        });
+      }
+    } catch (e) {
+      console.warn("[notify] email send failed", e);
+    }
     return { ok: true as const };
   });
+
+// ---------- Public: blog ----------
+export const listBlogPosts = createServerFn({ method: "GET" }).handler(async () => {
+  const sb = publicClient();
+  const { data, error } = await sb
+    .from("blog_posts")
+    .select("id,slug,title,excerpt,cover_url,tags,published_at")
+    .eq("published", true)
+    .order("published_at", { ascending: false });
+  if (error) throw new Error(error.message);
+  return data ?? [];
+});
+
+export const getBlogPost = createServerFn({ method: "GET" })
+  .inputValidator((d: unknown) => z.object({ slug: z.string().min(1).max(200) }).parse(d))
+  .handler(async ({ data }) => {
+    const sb = publicClient();
+    const { data: row, error } = await sb
+      .from("blog_posts")
+      .select("*")
+      .eq("slug", data.slug)
+      .eq("published", true)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return row;
+  });
+
+export const getSiteSettings = createServerFn({ method: "GET" }).handler(async () => {
+  const sb = publicClient();
+  const { data } = await sb.from("site_settings").select("chatbot_enabled,chatbot_kb_extra,whatsapp_enabled").eq("id", true).maybeSingle();
+  return data ?? { chatbot_enabled: true, chatbot_kb_extra: "", whatsapp_enabled: true };
+});
+
+// ---------- Chatbot: build knowledge context from live CMS ----------
+export const getChatbotContext = createServerFn({ method: "GET" }).handler(async () => {
+  const sb = publicClient();
+  const [services, plans, addons, faqs, about, founder, contact, settings] = await Promise.all([
+    sb.from("services").select("title,description").order("sort_order"),
+    sb.from("pricing_plans").select("name,price,tagline,features").order("sort_order"),
+    sb.from("additional_services").select("name,price").order("sort_order"),
+    sb.from("faqs").select("question,answer").order("sort_order"),
+    sb.from("about_content").select("heading,body").maybeSingle(),
+    sb.from("founder").select("name,title,vision").maybeSingle(),
+    sb.from("contact_info").select("email,phone,whatsapp").maybeSingle(),
+    sb.from("site_settings").select("chatbot_enabled,chatbot_kb_extra").eq("id", true).maybeSingle(),
+  ]);
+  return {
+    enabled: settings.data?.chatbot_enabled ?? true,
+    kbExtra: settings.data?.chatbot_kb_extra ?? "",
+    services: services.data ?? [],
+    plans: plans.data ?? [],
+    addons: addons.data ?? [],
+    faqs: faqs.data ?? [],
+    about: about.data,
+    founder: founder.data,
+    contact: contact.data,
+  };
+});
 
 // ---------- Admin secret code gate ----------
 export const verifyAdminCode = createServerFn({ method: "POST" })
@@ -147,6 +239,8 @@ const ADMIN_TABLES = [
   "section_meta",
   "why_choose_us",
   "process_steps",
+  "blog_posts",
+  "site_settings",
 ] as const;
 type AdminTable = (typeof ADMIN_TABLES)[number];
 const tableSchema = z.enum(ADMIN_TABLES);

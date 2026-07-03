@@ -9,7 +9,7 @@ import {
   verifyAdminCode, bootstrapAdmin, getMyRole,
   adminUpsert, adminDelete, adminUploadMedia,
   adminListSubmissions, adminDeleteSubmission, adminListMedia,
-  getSiteContent,
+  getSiteContent, getSiteSettings, listBlogPosts,
 } from "@/lib/cms.functions";
 import { broadcastCmsUpdate } from "@/lib/cms-broadcast";
 
@@ -177,7 +177,8 @@ function AuthCard({ onDone }: { onDone: () => void }) {
 // ==================== DASHBOARD ====================
 type Tab =
   | "sections" | "portfolio" | "services" | "why" | "pricing" | "addons" | "testimonials" | "faqs"
-  | "hero" | "about" | "founder" | "process" | "contact" | "submissions" | "media";
+  | "hero" | "about" | "founder" | "process" | "contact" | "submissions" | "media"
+  | "blog" | "settings";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "sections", label: "Section Text" },
@@ -193,6 +194,8 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "testimonials", label: "Testimonials" },
   { id: "faqs", label: "FAQs" },
   { id: "contact", label: "Contact Info" },
+  { id: "blog", label: "Blog" },
+  { id: "settings", label: "Settings" },
   { id: "submissions", label: "Submissions" },
   { id: "media", label: "Media" },
 ];
@@ -377,6 +380,8 @@ function Dashboard({ email, onSignOut }: { email: string; onSignOut: () => void 
             )}
             {tab === "submissions" && <SubmissionsPanel />}
             {tab === "media" && <MediaPanel />}
+            {tab === "blog" && <BlogPanel />}
+            {tab === "settings" && <SettingsPanel />}
           </>
         )}
       </div>
@@ -678,4 +683,161 @@ function SectionMetaPanel({
     </div>
   );
 }
+
+// ==================== BLOG PANEL ====================
+function BlogPanel() {
+  const list = useQuery({ queryKey: ["admin-blog"], queryFn: () => listBlogPosts() });
+  const upsert = useServerFn(adminUpsert);
+  const del = useServerFn(adminDelete);
+  const [editing, setEditing] = useState<Record<string, unknown> | null>(null);
+
+  function slugify(s: string) {
+    return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 80);
+  }
+  async function save() {
+    if (!editing) return;
+    try {
+      const row = { ...editing };
+      if (!row.slug && row.title) row.slug = slugify(String(row.title));
+      if (row.published && !row.published_at) row.published_at = new Date().toISOString();
+      await upsert({ data: { table: "blog_posts" as never, row: row as never } });
+      toast.success("Saved");
+      setEditing(null);
+      list.refetch();
+    } catch (err) { toast.error(err instanceof Error ? err.message : "Save failed"); }
+  }
+  async function remove(id: string) {
+    if (!confirm("Delete this post?")) return;
+    try { await del({ data: { table: "blog_posts" as never, id } }); toast.success("Deleted"); list.refetch(); }
+    catch (err) { toast.error(err instanceof Error ? err.message : "Delete failed"); }
+  }
+
+  const input = "w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm outline-none focus:border-[#38BDF8]";
+
+  return (
+    <div>
+      <div className="mb-4 flex items-center justify-between">
+        <div>
+          <h2 className="font-display text-xl font-semibold">Blog Posts</h2>
+          <p className="mt-1 text-xs text-white/50">Write in Markdown. Only published posts appear on /blog and in the sitemap.</p>
+        </div>
+        <button onClick={() => setEditing({ title: "", slug: "", excerpt: "", cover_url: "", body_md: "", tags: [], published: false, seo_title: "", seo_description: "" })} className="btn-primary btn-primary-hover !py-2 !text-xs">
+          <Plus size={14} /> New post
+        </button>
+      </div>
+      <div className="space-y-2">
+        {list.data?.map((p) => (
+          <div key={p.id} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.02] p-3">
+            <div className="flex-1 truncate text-sm">
+              <span className="font-medium">{p.title}</span>
+              <span className="text-white/50"> — /{p.slug}</span>
+            </div>
+            <button onClick={() => setEditing(p as unknown as Record<string, unknown>)} className="rounded-lg border border-white/10 px-3 py-1.5 text-xs hover:border-[#38BDF8]/40">Edit</button>
+            <button onClick={() => remove(p.id)} className="rounded-lg border border-white/10 px-3 py-1.5 text-xs text-red-400 hover:border-red-500/40"><Trash2 size={12} /></button>
+          </div>
+        ))}
+        {list.data?.length === 0 && <div className="rounded-xl border border-dashed border-white/10 p-6 text-center text-xs text-white/40">No posts yet.</div>}
+      </div>
+      {editing && (
+        <div className="mt-6 rounded-2xl border border-[#38BDF8]/30 bg-white/[0.03] p-5">
+          <div className="mb-4 flex items-center justify-between">
+            <div className="font-display font-semibold">{editing.id ? "Edit post" : "New post"}</div>
+            <button onClick={() => setEditing(null)} className="text-xs text-white/50 hover:text-white">Cancel</button>
+          </div>
+          <div className="grid gap-4">
+            <div>
+              <label className="mb-1 block text-xs font-medium text-white/60">Title</label>
+              <input className={input} value={String(editing.title ?? "")}
+                onChange={(e) => setEditing({ ...editing, title: e.target.value, slug: editing.slug || slugify(e.target.value) })} />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-white/60">Slug</label>
+              <input className={input} value={String(editing.slug ?? "")} onChange={(e) => setEditing({ ...editing, slug: e.target.value })} />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-white/60">Excerpt (short summary)</label>
+              <textarea rows={2} className={input} value={String(editing.excerpt ?? "")} onChange={(e) => setEditing({ ...editing, excerpt: e.target.value })} />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-white/60">Cover image</label>
+              <ImageField value={editing.cover_url as string | null} onChange={(v) => setEditing({ ...editing, cover_url: v })} />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-white/60">Body (Markdown)</label>
+              <textarea rows={14} className={`${input} font-mono text-xs`} value={String(editing.body_md ?? "")} onChange={(e) => setEditing({ ...editing, body_md: e.target.value })} />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-white/60">Tags (one per line)</label>
+              <textarea rows={3} className={input} value={Array.isArray(editing.tags) ? (editing.tags as string[]).join("\n") : ""}
+                onChange={(e) => setEditing({ ...editing, tags: e.target.value.split("\n").map((t) => t.trim()).filter(Boolean) })} />
+            </div>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <label className="mb-1 block text-xs font-medium text-white/60">SEO title (optional)</label>
+                <input className={input} value={String(editing.seo_title ?? "")} onChange={(e) => setEditing({ ...editing, seo_title: e.target.value })} />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-medium text-white/60">SEO description (optional)</label>
+                <input className={input} value={String(editing.seo_description ?? "")} onChange={(e) => setEditing({ ...editing, seo_description: e.target.value })} />
+              </div>
+            </div>
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" checked={!!editing.published} onChange={(e) => setEditing({ ...editing, published: e.target.checked })} />
+              Published (visible on /blog)
+            </label>
+          </div>
+          <button onClick={save} className="btn-primary btn-primary-hover mt-5">Save post</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ==================== SETTINGS PANEL ====================
+function SettingsPanel() {
+  const q = useQuery({ queryKey: ["admin-site-settings"], queryFn: () => getSiteSettings() });
+  const upsert = useServerFn(adminUpsert);
+  const [state, setState] = useState<Record<string, unknown>>({});
+  useEffect(() => {
+    if (q.data) setState({ ...q.data, id: true });
+  }, [q.data]);
+  async function save() {
+    try {
+      await upsert({ data: { table: "site_settings" as never, row: { ...state, id: true } as never } });
+      toast.success("Settings saved");
+      q.refetch();
+      broadcastCmsUpdate();
+    } catch (err) { toast.error(err instanceof Error ? err.message : "Save failed"); }
+  }
+  const input = "w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm outline-none focus:border-[#38BDF8]";
+  return (
+    <div>
+      <h2 className="mb-1 font-display text-xl font-semibold">Site Settings</h2>
+      <p className="mb-6 text-xs text-white/50">Controls chatbot, WhatsApp button and admin email notifications.</p>
+      <div className="grid gap-5">
+        <label className="flex items-center gap-2 text-sm">
+          <input type="checkbox" checked={!!state.chatbot_enabled} onChange={(e) => setState({ ...state, chatbot_enabled: e.target.checked })} />
+          Enable AI chatbot (TruBot) on the public site
+        </label>
+        <div>
+          <label className="mb-1 block text-xs font-medium text-white/60">Extra knowledge for the chatbot (optional)</label>
+          <textarea rows={6} className={input} placeholder="Anything else you want TruBot to know — hours, refund policy, current promotions…"
+            value={String(state.chatbot_kb_extra ?? "")} onChange={(e) => setState({ ...state, chatbot_kb_extra: e.target.value })} />
+          <p className="mt-1 text-[11px] text-white/40">Your services, pricing, FAQs and contact info are already included automatically.</p>
+        </div>
+        <label className="flex items-center gap-2 text-sm">
+          <input type="checkbox" checked={!!state.whatsapp_enabled} onChange={(e) => setState({ ...state, whatsapp_enabled: e.target.checked })} />
+          Show floating WhatsApp button
+        </label>
+        <div>
+          <label className="mb-1 block text-xs font-medium text-white/60">Notification email (receives new contact inquiries)</label>
+          <input type="email" className={input} placeholder="you@yourdomain.com" value={String(state.notification_email ?? "")} onChange={(e) => setState({ ...state, notification_email: e.target.value })} />
+          <p className="mt-1 text-[11px] text-white/40">Requires the Resend connector. Connect it via Cloud → Connectors, then inquiries auto-forward here.</p>
+        </div>
+      </div>
+      <button onClick={save} className="btn-primary btn-primary-hover mt-6">Save settings</button>
+    </div>
+  );
+}
+
 
