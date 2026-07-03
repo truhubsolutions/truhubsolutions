@@ -239,6 +239,8 @@ const ADMIN_TABLES = [
   "section_meta",
   "why_choose_us",
   "process_steps",
+  "blog_posts",
+  "site_settings",
 ] as const;
 type AdminTable = (typeof ADMIN_TABLES)[number];
 const tableSchema = z.enum(ADMIN_TABLES);
