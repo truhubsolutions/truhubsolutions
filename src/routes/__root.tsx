@@ -123,6 +123,22 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router = useRouter();
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    let cleanup = () => {};
+    (async () => {
+      const { initAnalyticsListeners, trackPageView } = await import("../lib/analytics/track");
+      cleanup = initAnalyticsListeners();
+      trackPageView();
+      const unsub = router.subscribe("onResolved", () => {
+        trackPageView();
+      });
+      const prev = cleanup;
+      cleanup = () => { prev(); unsub(); };
+    })();
+    return () => cleanup();
+  }, [router]);
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />
