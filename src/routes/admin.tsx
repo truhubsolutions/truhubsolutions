@@ -193,10 +193,6 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "leads", label: "Leads" },
   { id: "activity", label: "Activity" },
   { id: "security", label: "Security" },
-
-const TABS: { id: Tab; label: string }[] = [
-  { id: "dashboard", label: "Dashboard" },
-  { id: "analytics", label: "Analytics" },
   { id: "sections", label: "Section Text" },
   { id: "hero", label: "Hero" },
   { id: "about", label: "About" },
@@ -212,7 +208,7 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "contact", label: "Contact Info" },
   { id: "blog", label: "Blog" },
   { id: "settings", label: "Settings" },
-  { id: "submissions", label: "Submissions" },
+  { id: "submissions", label: "Submissions (legacy)" },
   { id: "media", label: "Media" },
 ];
 
