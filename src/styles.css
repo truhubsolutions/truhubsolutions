@@ -202,6 +202,20 @@
   &:hover { background: rgba(30,167,255,0.1); border-color: rgba(30,167,255,0.5); color: #38BDF8; }
 }
 
+@utility input {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.03);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: #fff;
+  outline: none;
+  transition: border-color 0.15s;
+  &:focus { border-color: #38BDF8; }
+}
+
+
 @utility section {
   padding-block: 6rem;
   @media (min-width: 768px) { padding-block: 8rem; }

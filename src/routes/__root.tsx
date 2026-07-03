@@ -19,6 +19,24 @@ const OG_IMAGE =
   "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/c71bd585-7f02-4fa8-b82d-d88c06e7398a";
 
 function NotFoundComponent() {
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const path = window.location.pathname;
+    (async () => {
+      try {
+        const { supabase } = await import("../integrations/supabase/client");
+        // Check redirect
+        const { data: redir } = await supabase
+          .from("redirects").select("to_path,status_code")
+          .eq("from_path", path).eq("enabled", true).maybeSingle();
+        if (redir?.to_path) { window.location.replace(redir.to_path); return; }
+        // Log 404
+        await supabase.from("not_found_log").insert({
+          path, referrer: document.referrer || null, user_agent: navigator.userAgent,
+        });
+      } catch { /* noop */ }
+    })();
+  }, []);
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
@@ -34,6 +52,7 @@ function NotFoundComponent() {
     </div>
   );
 }
+
 
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);

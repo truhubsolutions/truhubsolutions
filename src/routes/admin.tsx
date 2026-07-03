@@ -17,7 +17,11 @@ import { AnalyticsPanel } from "@/components/admin/analytics-panel";
 import { LeadsPanel } from "@/components/admin/leads-panel";
 import { ActivityPanel } from "@/components/admin/activity-panel";
 import { SecurityPanel } from "@/components/admin/security-panel";
+import { SeoPanel } from "@/components/admin/seo-panel";
+import { RedirectsPanel } from "@/components/admin/redirects-panel";
+import { MediaLibraryPanel } from "@/components/admin/media-library-panel";
 import { recordLoginAttempt } from "@/lib/security/security.functions";
+
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
@@ -190,7 +194,7 @@ type Tab =
   | "dashboard" | "analytics" | "leads" | "activity" | "security"
   | "sections" | "portfolio" | "services" | "why" | "pricing" | "addons" | "testimonials" | "faqs"
   | "hero" | "about" | "founder" | "process" | "contact" | "submissions" | "media"
-  | "blog" | "settings";
+  | "blog" | "settings" | "seo" | "redirects" | "media-library";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "dashboard", label: "Dashboard" },
@@ -212,10 +216,14 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "faqs", label: "FAQs" },
   { id: "contact", label: "Contact Info" },
   { id: "blog", label: "Blog" },
+  { id: "seo", label: "SEO" },
+  { id: "redirects", label: "Redirects" },
+  { id: "media-library", label: "Media Library" },
   { id: "settings", label: "Settings" },
   { id: "submissions", label: "Submissions (legacy)" },
-  { id: "media", label: "Media" },
+  { id: "media", label: "Media (legacy)" },
 ];
+
 
 function Dashboard({ email, onSignOut }: { email: string; onSignOut: () => void }) {
   const [tab, setTab] = useState<Tab>("dashboard");
@@ -254,8 +262,12 @@ function Dashboard({ email, onSignOut }: { email: string; onSignOut: () => void 
         {tab === "leads" && <LeadsPanel />}
         {tab === "activity" && <ActivityPanel />}
         {tab === "security" && <SecurityPanel />}
-        {content.isLoading && !["dashboard","analytics","leads","activity","security"].includes(tab) && <Loader2 className="animate-spin text-[#38BDF8]" />}
-        {content.data && !["dashboard","analytics","leads","activity","security"].includes(tab) && (
+        {tab === "seo" && <SeoPanel />}
+        {tab === "redirects" && <RedirectsPanel />}
+        {tab === "media-library" && <MediaLibraryPanel />}
+        {content.isLoading && !["dashboard","analytics","leads","activity","security","seo","redirects","media-library"].includes(tab) && <Loader2 className="animate-spin text-[#38BDF8]" />}
+        {content.data && !["dashboard","analytics","leads","activity","security","seo","redirects","media-library"].includes(tab) && (
+
           <>
             {tab === "portfolio" && (
               <ListEditor table="portfolio_items" title="Portfolio" rows={content.data.portfolio}
