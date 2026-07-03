@@ -9,12 +9,12 @@ import { Services, WhyChooseUs } from "@/components/site/services";
 import { Pricing } from "@/components/site/pricing";
 import { Portfolio } from "@/components/site/portfolio";
 import { Process } from "@/components/site/process";
-import { Testimonials } from "@/components/site/testimonials";
 import { FAQ } from "@/components/site/faq";
 import { Contact } from "@/components/site/contact";
 import { Footer } from "@/components/site/footer";
 import { FloatingWhatsApp } from "@/components/site/whatsapp";
 import { WHY_CHOOSE_US, PROCESS_STEPS } from "@/lib/site-data";
+
 
 export const Route = createFileRoute("/")({
   loader: ({ context }) => context.queryClient.ensureQueryData(siteContentQuery),
