@@ -1,4 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { subscribeToCmsUpdates } from "@/lib/cms-broadcast";
 import { siteContentQuery, useSiteContent } from "@/hooks/use-cms";
 import { SiteLoader } from "@/components/site/loader";
 import { Navbar } from "@/components/site/navbar";
