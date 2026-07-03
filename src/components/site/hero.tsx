@@ -1,8 +1,10 @@
 "use client";
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { ArrowRight, ChevronDown, Sparkles } from "lucide-react";
+import { ArrowRight, ChevronDown } from "lucide-react";
 import { Aurora, Grid, Particles } from "./aurora";
+import truhubLogo from "@/assets/truhub-logo.png.asset.json";
+
 
 export function Hero({
   headline,
@@ -57,14 +59,45 @@ export function Hero({
       <div className="container-x relative z-10">
         <motion.div style={{ x: tx, y: ty }} className="mx-auto max-w-4xl text-center">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-            className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-1.5 text-xs font-medium text-white/80 backdrop-blur-xl"
+            initial={{ opacity: 0, scale: 0.6, filter: "blur(20px)" }}
+            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+            transition={{ duration: 1, ease: [0.2, 0.8, 0.2, 1] }}
+            className="mb-8 flex justify-center"
           >
-            <Sparkles size={14} className="text-[#38BDF8]" />
-            Luxury Technology Agency · Build · Grow · Succeed
+            <div className="relative">
+              <motion.div
+                aria-hidden
+                className="absolute inset-0 rounded-full"
+                style={{
+                  background:
+                    "radial-gradient(circle, rgba(30,167,255,0.55), rgba(56,189,248,0.15) 60%, transparent 75%)",
+                  filter: "blur(30px)",
+                }}
+                animate={{ scale: [1, 1.15, 1], opacity: [0.7, 1, 0.7] }}
+                transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+              />
+              <motion.div
+                aria-hidden
+                className="absolute -inset-4 rounded-full border border-[#38BDF8]/20"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
+                style={{
+                  maskImage:
+                    "conic-gradient(from 0deg, transparent 0deg, #000 90deg, transparent 180deg)",
+                }}
+              />
+              <motion.img
+                src={truhubLogo.url}
+                alt="TruHub Solutions"
+                className="relative h-28 w-28 object-contain sm:h-36 sm:w-36"
+                animate={{ y: [0, -8, 0] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                style={{ filter: "drop-shadow(0 10px 40px rgba(30,167,255,0.55))" }}
+              />
+            </div>
           </motion.div>
+
+
 
           <motion.h1
             className="font-display text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl md:text-7xl"
