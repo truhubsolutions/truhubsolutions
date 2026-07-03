@@ -11,30 +11,56 @@ export function Aurora({ className = "" }: { className?: string }) {
   );
 }
 
+import { useMemo, useEffect, useState } from "react";
+
+type Dot = {
+  top: string;
+  left: string;
+  size: number;
+  bg: string;
+  dur: number;
+  delay: number;
+};
+
 export function Particles({ count = 40 }: { count?: number }) {
-  const dots = Array.from({ length: count });
+  // Only generate on the client, after mount — avoids SSR/client hydration
+  // mismatches (Math.random differs between server and client) that would
+  // otherwise cause React to discard and re-render the tree on every parent
+  // state change (e.g. typing in the contact form).
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  const dots = useMemo<Dot[]>(() => {
+    if (!mounted) return [];
+    return Array.from({ length: count }, () => ({
+      top: `${Math.random() * 100}%`,
+      left: `${Math.random() * 100}%`,
+      size: 1 + Math.random() * 2.5,
+      bg: `rgba(${Math.random() > 0.5 ? "56,189,248" : "255,255,255"},${0.3 + Math.random() * 0.5})`,
+      dur: 8 + Math.random() * 10,
+      delay: Math.random() * 8,
+    }));
+  }, [count, mounted]);
+
+  if (!mounted) return null;
+
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-      {dots.map((_, i) => {
-        const size = 1 + Math.random() * 2.5;
-        const delay = Math.random() * 8;
-        const dur = 8 + Math.random() * 10;
-        return (
-          <span
-            key={i}
-            className="absolute rounded-full"
-            style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              width: size,
-              height: size,
-              background: `rgba(${Math.random() > 0.5 ? "56,189,248" : "255,255,255"},${0.3 + Math.random() * 0.5})`,
-              boxShadow: "0 0 8px rgba(56,189,248,0.6)",
-              animation: `float-y ${dur}s ease-in-out ${delay}s infinite`,
-            }}
-          />
-        );
-      })}
+      {dots.map((d, i) => (
+        <span
+          key={i}
+          className="absolute rounded-full"
+          style={{
+            top: d.top,
+            left: d.left,
+            width: d.size,
+            height: d.size,
+            background: d.bg,
+            boxShadow: "0 0 8px rgba(56,189,248,0.6)",
+            animation: `float-y ${d.dur}s ease-in-out ${d.delay}s infinite`,
+          }}
+        />
+      ))}
     </div>
   );
 }
