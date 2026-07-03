@@ -17,7 +17,11 @@ import { AnalyticsPanel } from "@/components/admin/analytics-panel";
 import { LeadsPanel } from "@/components/admin/leads-panel";
 import { ActivityPanel } from "@/components/admin/activity-panel";
 import { SecurityPanel } from "@/components/admin/security-panel";
+import { SeoPanel } from "@/components/admin/seo-panel";
+import { RedirectsPanel } from "@/components/admin/redirects-panel";
+import { MediaLibraryPanel } from "@/components/admin/media-library-panel";
 import { recordLoginAttempt } from "@/lib/security/security.functions";
+
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
