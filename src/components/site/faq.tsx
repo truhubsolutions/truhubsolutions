@@ -2,23 +2,15 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import { Reveal } from "./reveal";
+import { SectionHeader, type SectionMeta } from "./section-header";
 
-export function FAQ({ items }: { items: Array<{ id: string; question: string; answer: string }> }) {
+export function FAQ({ items, meta }: { items: Array<{ id: string; question: string; answer: string }>; meta?: SectionMeta }) {
   const [open, setOpen] = useState<string | null>(items[0]?.id ?? null);
   if (items.length === 0) return null;
   return (
     <section id="faq" className="section relative">
       <div className="container-x">
-        <Reveal>
-          <div className="mx-auto mb-14 max-w-2xl text-center">
-            <div className="mb-3 inline-block rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-medium text-[#38BDF8]">
-              FAQ
-            </div>
-            <h2 className="font-display text-4xl font-bold sm:text-5xl">
-              <span className="text-gradient">Frequently asked</span>
-            </h2>
-          </div>
-        </Reveal>
+        <SectionHeader meta={meta} eyebrow="FAQ" heading="Frequently asked questions" />
         <div className="mx-auto max-w-3xl space-y-3">
           {items.map((f, i) => {
             const isOpen = open === f.id;
