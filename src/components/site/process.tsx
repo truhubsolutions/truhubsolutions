@@ -61,7 +61,7 @@ export function Process({ steps, meta }: { steps: Array<{ title: string; desc: s
 
                   <div className="mt-5 flex items-center justify-between border-t border-white/5 pt-4 text-xs">
                     <span className="rounded-full bg-white/[0.05] px-2.5 py-1 text-white/60">
-                      {DURATIONS[i] ?? "Flexible"}
+                      {s.duration ?? DEFAULT_DURATIONS[i] ?? "Flexible"}
                     </span>
                     {!isLast ? (
                       <span className="flex items-center gap-1 text-[#38BDF8]/70">
