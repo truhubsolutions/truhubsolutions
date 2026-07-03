@@ -380,6 +380,8 @@ function Dashboard({ email, onSignOut }: { email: string; onSignOut: () => void 
             )}
             {tab === "submissions" && <SubmissionsPanel />}
             {tab === "media" && <MediaPanel />}
+            {tab === "blog" && <BlogPanel />}
+            {tab === "settings" && <SettingsPanel />}
           </>
         )}
       </div>
