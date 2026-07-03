@@ -435,9 +435,11 @@ function Dashboard({ email, onSignOut }: { email: string; onSignOut: () => void 
           </>
         )}
       </div>
+      <CommandPalette actions={TABS.map(t => ({ id: t.id, label: t.label, hint: "tab", run: () => setTab(t.id) }))} />
     </div>
   );
 }
+
 
 // ==================== FIELDS ====================
 type Field = { key: string; label: string; required?: boolean;
