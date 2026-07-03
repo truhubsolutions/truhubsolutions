@@ -12,6 +12,8 @@ import {
   getSiteContent, getSiteSettings, listBlogPosts,
 } from "@/lib/cms.functions";
 import { broadcastCmsUpdate } from "@/lib/cms-broadcast";
+import { DashboardOverview } from "@/components/admin/dashboard-overview";
+import { AnalyticsPanel } from "@/components/admin/analytics-panel";
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
@@ -176,11 +178,14 @@ function AuthCard({ onDone }: { onDone: () => void }) {
 
 // ==================== DASHBOARD ====================
 type Tab =
+  | "dashboard" | "analytics"
   | "sections" | "portfolio" | "services" | "why" | "pricing" | "addons" | "testimonials" | "faqs"
   | "hero" | "about" | "founder" | "process" | "contact" | "submissions" | "media"
   | "blog" | "settings";
 
 const TABS: { id: Tab; label: string }[] = [
+  { id: "dashboard", label: "Dashboard" },
+  { id: "analytics", label: "Analytics" },
   { id: "sections", label: "Section Text" },
   { id: "hero", label: "Hero" },
   { id: "about", label: "About" },
@@ -201,7 +206,7 @@ const TABS: { id: Tab; label: string }[] = [
 ];
 
 function Dashboard({ email, onSignOut }: { email: string; onSignOut: () => void }) {
-  const [tab, setTab] = useState<Tab>("sections");
+  const [tab, setTab] = useState<Tab>("dashboard");
   const qc = useQueryClient();
   const content = useQuery({ queryKey: ["admin-content"], queryFn: () => getSiteContent(), staleTime: 0 });
 
@@ -232,8 +237,10 @@ function Dashboard({ email, onSignOut }: { email: string; onSignOut: () => void 
       </div>
 
       <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-6">
-        {content.isLoading && <Loader2 className="animate-spin text-[#38BDF8]" />}
-        {content.data && (
+        {tab === "dashboard" && <DashboardOverview onNavigate={(t) => setTab(t as Tab)} />}
+        {tab === "analytics" && <AnalyticsPanel />}
+        {content.isLoading && tab !== "dashboard" && tab !== "analytics" && <Loader2 className="animate-spin text-[#38BDF8]" />}
+        {content.data && tab !== "dashboard" && tab !== "analytics" && (
           <>
             {tab === "portfolio" && (
               <ListEditor table="portfolio_items" title="Portfolio" rows={content.data.portfolio}
