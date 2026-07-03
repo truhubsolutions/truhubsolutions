@@ -177,7 +177,8 @@ function AuthCard({ onDone }: { onDone: () => void }) {
 // ==================== DASHBOARD ====================
 type Tab =
   | "sections" | "portfolio" | "services" | "why" | "pricing" | "addons" | "testimonials" | "faqs"
-  | "hero" | "about" | "founder" | "process" | "contact" | "submissions" | "media";
+  | "hero" | "about" | "founder" | "process" | "contact" | "submissions" | "media"
+  | "blog" | "settings";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "sections", label: "Section Text" },
@@ -193,6 +194,8 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "testimonials", label: "Testimonials" },
   { id: "faqs", label: "FAQs" },
   { id: "contact", label: "Contact Info" },
+  { id: "blog", label: "Blog" },
+  { id: "settings", label: "Settings" },
   { id: "submissions", label: "Submissions" },
   { id: "media", label: "Media" },
 ];
