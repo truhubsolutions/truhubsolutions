@@ -81,6 +81,7 @@ function Index() {
     [qc],
   );
   const { data } = useSiteContent();
+  const { data: settings } = useQuery({ queryKey: ["site-settings"], queryFn: () => getSiteSettings() });
   const hero = data?.hero ?? FALLBACK.hero;
   const about = data?.about ?? FALLBACK.about;
   const founder = data?.founder ?? FALLBACK.founder;
