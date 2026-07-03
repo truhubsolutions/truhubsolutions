@@ -11,6 +11,7 @@ import {
   adminListSubmissions, adminDeleteSubmission, adminListMedia,
   getSiteContent,
 } from "@/lib/cms.functions";
+import { broadcastCmsUpdate } from "@/lib/cms-broadcast";
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
