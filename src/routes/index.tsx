@@ -16,6 +16,7 @@ import { FAQ } from "@/components/site/faq";
 import { Contact } from "@/components/site/contact";
 import { Footer } from "@/components/site/footer";
 import { FloatingWhatsApp } from "@/components/site/whatsapp";
+import { ChatWidget } from "@/components/site/chat-widget";
 import { WHY_CHOOSE_US, PROCESS_STEPS } from "@/lib/site-data";
 
 
