@@ -351,6 +351,30 @@ function Dashboard({ email, onSignOut }: { email: string; onSignOut: () => void 
                 onChanged={() => { qc.invalidateQueries(); content.refetch(); }}
               />
             )}
+            {tab === "sections" && (
+              <SectionMetaPanel meta={content.data.meta} onChanged={() => { qc.invalidateQueries(); content.refetch(); }} />
+            )}
+            {tab === "why" && (
+              <ListEditor table="why_choose_us" title="Why Choose Us Items" rows={content.data.whyChooseUs}
+                fields={[
+                  { key: "title", label: "Title", type: "text", required: true },
+                  { key: "description", label: "Description", type: "textarea", required: true },
+                  { key: "sort_order", label: "Order", type: "number" },
+                ]}
+                onChanged={() => { qc.invalidateQueries(); content.refetch(); }}
+              />
+            )}
+            {tab === "process" && (
+              <ListEditor table="process_steps" title="Process Steps" rows={content.data.processSteps}
+                fields={[
+                  { key: "title", label: "Step Title", type: "text", required: true },
+                  { key: "description", label: "Description", type: "textarea", required: true },
+                  { key: "duration", label: "Duration (e.g. 2–4 days)", type: "text" },
+                  { key: "sort_order", label: "Order", type: "number" },
+                ]}
+                onChanged={() => { qc.invalidateQueries(); content.refetch(); }}
+              />
+            )}
             {tab === "submissions" && <SubmissionsPanel />}
             {tab === "media" && <MediaPanel />}
           </>
