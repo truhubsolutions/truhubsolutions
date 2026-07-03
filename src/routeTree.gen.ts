@@ -15,6 +15,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as ApiPublicTrackRouteImport } from './routes/api/public/track'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -46,6 +47,11 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicTrackRoute = ApiPublicTrackRouteImport.update({
+  id: '/api/public/track',
+  path: '/api/public/track',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -54,6 +60,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/chat': typeof ApiChatRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/api/public/track': typeof ApiPublicTrackRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -62,6 +69,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/chat': typeof ApiChatRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/api/public/track': typeof ApiPublicTrackRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -71,6 +79,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/chat': typeof ApiChatRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/api/public/track': typeof ApiPublicTrackRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -81,8 +90,16 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/api/chat'
     | '/blog/$slug'
+    | '/api/public/track'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/blog' | '/sitemap.xml' | '/api/chat' | '/blog/$slug'
+  to:
+    | '/'
+    | '/admin'
+    | '/blog'
+    | '/sitemap.xml'
+    | '/api/chat'
+    | '/blog/$slug'
+    | '/api/public/track'
   id:
     | '__root__'
     | '/'
@@ -91,6 +108,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/api/chat'
     | '/blog/$slug'
+    | '/api/public/track'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -99,6 +117,7 @@ export interface RootRouteChildren {
   BlogRoute: typeof BlogRouteWithChildren
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiChatRoute: typeof ApiChatRoute
+  ApiPublicTrackRoute: typeof ApiPublicTrackRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -145,6 +164,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/track': {
+      id: '/api/public/track'
+      path: '/api/public/track'
+      fullPath: '/api/public/track'
+      preLoaderRoute: typeof ApiPublicTrackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -164,6 +190,7 @@ const rootRouteChildren: RootRouteChildren = {
   BlogRoute: BlogRouteWithChildren,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiChatRoute: ApiChatRoute,
+  ApiPublicTrackRoute: ApiPublicTrackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
