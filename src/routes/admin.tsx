@@ -466,10 +466,11 @@ function ListEditor({ table, title, rows, fields, onChanged }: {
       </div>
       <div className="space-y-2">
         {rows.map((r) => {
-          const title = (r.name ?? r.title ?? r.question ?? r.headline ?? r.id) as string;
+          const primary = (r.name ?? r.title ?? r.question ?? r.headline ?? r.id) as string;
+          const secondary = r.price ? ` — ${r.price}` : r.category ? ` — ${r.category}` : "";
           return (
             <div key={r.id as string} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.02] p-3">
-              <div className="flex-1 truncate text-sm">{title}</div>
+              <div className="flex-1 truncate text-sm"><span className="font-medium">{primary}</span><span className="text-white/50">{secondary}</span></div>
               <button onClick={() => setEditing(r)} className="rounded-lg border border-white/10 px-3 py-1.5 text-xs hover:border-[#38BDF8]/40">Edit</button>
               <button onClick={() => remove(r.id as string)} className="rounded-lg border border-white/10 px-3 py-1.5 text-xs text-red-400 hover:border-red-500/40"><Trash2 size={12} /></button>
             </div>
