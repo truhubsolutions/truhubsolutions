@@ -129,7 +129,7 @@ function Index() {
         <Contact email={contact.email} phone={contact.phone} meta={meta.contact} />
       </main>
       <Footer email={contact.email} phone={contact.phone} />
-      <FloatingWhatsApp number={contact.whatsapp} />
+      {(settings?.whatsapp_enabled ?? true) && <FloatingWhatsApp number={contact.whatsapp} />}
       <ChatWidget />
     </div>
   );
