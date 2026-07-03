@@ -14,8 +14,9 @@ export const Route = createFileRoute("/portal")({
   ssr: false,
   head: () => ({ meta: [
     { title: "Client Portal — TruHub Solutions" },
-    { name: "robots", content: "noindex, nofollow" },
     { name: "description", content: "TruHub Solutions client portal — track your project, deliverables, invoices and messages." },
+    { property: "og:title", content: "Client Portal — TruHub Solutions" },
+    { property: "og:description", content: "Track your project status, deliverables, invoices and messages with TruHub Solutions." },
   ]}),
   component: PortalPage,
 });
