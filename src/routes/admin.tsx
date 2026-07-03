@@ -194,7 +194,7 @@ type Tab =
   | "dashboard" | "analytics" | "leads" | "activity" | "security"
   | "sections" | "portfolio" | "services" | "why" | "pricing" | "addons" | "testimonials" | "faqs"
   | "hero" | "about" | "founder" | "process" | "contact" | "submissions" | "media"
-  | "blog" | "settings";
+  | "blog" | "settings" | "seo" | "redirects" | "media-library";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "dashboard", label: "Dashboard" },
@@ -216,10 +216,14 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "faqs", label: "FAQs" },
   { id: "contact", label: "Contact Info" },
   { id: "blog", label: "Blog" },
+  { id: "seo", label: "SEO" },
+  { id: "redirects", label: "Redirects" },
+  { id: "media-library", label: "Media Library" },
   { id: "settings", label: "Settings" },
   { id: "submissions", label: "Submissions (legacy)" },
-  { id: "media", label: "Media" },
+  { id: "media", label: "Media (legacy)" },
 ];
+
 
 function Dashboard({ email, onSignOut }: { email: string; onSignOut: () => void }) {
   const [tab, setTab] = useState<Tab>("dashboard");
