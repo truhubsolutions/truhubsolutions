@@ -59,7 +59,7 @@
 }
 
 :root, .dark {
-  --radius: 1rem;
+  --radius: 1.5rem;
 
   /* Brand palette — exact hex → oklch */
   --background: oklch(0.152 0.028 265);        /* #030712 */
