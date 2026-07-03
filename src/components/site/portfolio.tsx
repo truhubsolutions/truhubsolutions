@@ -1,9 +1,11 @@
 "use client";
 import { ArrowUpRight } from "lucide-react";
 import { Reveal } from "./reveal";
+import { SectionHeader, type SectionMeta } from "./section-header";
 
 export function Portfolio({
   items,
+  meta,
 }: {
   items: Array<{
     id: string;
@@ -14,20 +16,12 @@ export function Portfolio({
     image_url: string | null;
     live_url: string | null;
   }>;
+  meta?: SectionMeta;
 }) {
   return (
     <section id="portfolio" className="section relative">
       <div className="container-x">
-        <Reveal>
-          <div className="mx-auto mb-14 max-w-2xl text-center">
-            <div className="mb-3 inline-block rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-medium text-[#38BDF8]">
-              Portfolio
-            </div>
-            <h2 className="font-display text-4xl font-bold sm:text-5xl">
-              <span className="text-gradient">Selected work</span>
-            </h2>
-          </div>
-        </Reveal>
+        <SectionHeader meta={meta} eyebrow="Portfolio" heading="Selected work" />
 
         {items.length === 0 ? (
           <Reveal>
