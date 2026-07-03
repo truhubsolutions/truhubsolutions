@@ -420,11 +420,12 @@ function ListEditor({ table, title, rows, fields, onChanged }: {
       toast.success("Saved");
       setEditing(null);
       onChanged();
+      broadcastCmsUpdate();
     } catch (err) { toast.error(err instanceof Error ? err.message : "Save failed"); }
   }
   async function remove(id: string) {
     if (!confirm("Delete this item?")) return;
-    try { await del({ data: { table: table as never, id } }); toast.success("Deleted"); onChanged(); }
+    try { await del({ data: { table: table as never, id } }); toast.success("Deleted"); onChanged(); broadcastCmsUpdate(); }
     catch (err) { toast.error(err instanceof Error ? err.message : "Delete failed"); }
   }
 
