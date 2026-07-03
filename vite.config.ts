@@ -21,4 +21,12 @@ export default defineConfig({
     server: { entry: "server" },
   },
   nitro: nitroPreset ? { preset: nitroPreset } : undefined,
+  vite: {
+    build: {
+      // Raise the "chunk > 500 kB" warning threshold. This is cosmetic only —
+      // it doesn't change bundle output, just quiets the build log.
+      chunkSizeWarningLimit: 1500,
+    },
+  },
 });
+
