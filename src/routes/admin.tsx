@@ -12,6 +12,8 @@ import {
   getSiteContent, getSiteSettings, listBlogPosts,
 } from "@/lib/cms.functions";
 import { broadcastCmsUpdate } from "@/lib/cms-broadcast";
+import { DashboardOverview } from "@/components/admin/dashboard-overview";
+import { AnalyticsPanel } from "@/components/admin/analytics-panel";
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
