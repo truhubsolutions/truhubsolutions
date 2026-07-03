@@ -237,8 +237,10 @@ function Dashboard({ email, onSignOut }: { email: string; onSignOut: () => void 
       </div>
 
       <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-6">
-        {content.isLoading && <Loader2 className="animate-spin text-[#38BDF8]" />}
-        {content.data && (
+        {tab === "dashboard" && <DashboardOverview onNavigate={(t) => setTab(t as Tab)} />}
+        {tab === "analytics" && <AnalyticsPanel />}
+        {content.isLoading && tab !== "dashboard" && tab !== "analytics" && <Loader2 className="animate-spin text-[#38BDF8]" />}
+        {content.data && tab !== "dashboard" && tab !== "analytics" && (
           <>
             {tab === "portfolio" && (
               <ListEditor table="portfolio_items" title="Portfolio" rows={content.data.portfolio}
