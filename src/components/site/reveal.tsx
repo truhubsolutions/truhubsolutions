@@ -16,11 +16,11 @@ const variants: Variants = {
 // body creates a brand-new component identity on every render, which makes
 // React unmount + remount the entire subtree — resetting form input focus
 // and replaying the reveal animation on every keystroke.
-const motionCache = new Map<React.ElementType, ReturnType<typeof motion>>();
-function getMotion(as: React.ElementType) {
+const motionCache = new Map<React.ElementType, React.ElementType>();
+function getMotion(as: React.ElementType): React.ElementType {
   let m = motionCache.get(as);
   if (!m) {
-    m = motion.create(as);
+    m = motion.create(as) as unknown as React.ElementType;
     motionCache.set(as, m);
   }
   return m;
