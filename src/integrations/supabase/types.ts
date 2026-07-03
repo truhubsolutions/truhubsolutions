@@ -74,6 +74,54 @@ export type Database = {
         }
         Relationships: []
       }
+      blog_posts: {
+        Row: {
+          body_md: string
+          cover_url: string | null
+          created_at: string
+          excerpt: string | null
+          id: string
+          published: boolean
+          published_at: string | null
+          seo_description: string | null
+          seo_title: string | null
+          slug: string
+          tags: string[]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body_md?: string
+          cover_url?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          published?: boolean
+          published_at?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
+          slug: string
+          tags?: string[]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body_md?: string
+          cover_url?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          published?: boolean
+          published_at?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
+          slug?: string
+          tags?: string[]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       contact_info: {
         Row: {
           address: string | null
@@ -380,6 +428,36 @@ export type Database = {
           sort_order?: number
           title?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          chatbot_enabled: boolean
+          chatbot_kb_extra: string
+          created_at: string
+          id: boolean
+          notification_email: string | null
+          updated_at: string
+          whatsapp_enabled: boolean
+        }
+        Insert: {
+          chatbot_enabled?: boolean
+          chatbot_kb_extra?: string
+          created_at?: string
+          id?: boolean
+          notification_email?: string | null
+          updated_at?: string
+          whatsapp_enabled?: boolean
+        }
+        Update: {
+          chatbot_enabled?: boolean
+          chatbot_kb_extra?: string
+          created_at?: string
+          id?: boolean
+          notification_email?: string | null
+          updated_at?: string
+          whatsapp_enabled?: boolean
         }
         Relationships: []
       }
