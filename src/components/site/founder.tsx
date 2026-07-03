@@ -1,7 +1,7 @@
 "use client";
 import { Check } from "lucide-react";
 import { Reveal } from "./reveal";
-import founderPhoto from "@/assets/founder-jayanth.png.asset.json";
+const founderPhoto = { url: "/founder-jayanth.jpg" };
 
 export function Founder({
   name,
