@@ -277,8 +277,12 @@ function Dashboard({ email, onSignOut }: { email: string; onSignOut: () => void 
         {tab === "seo" && <SeoPanel />}
         {tab === "redirects" && <RedirectsPanel />}
         {tab === "media-library" && <MediaLibraryPanel />}
-        {content.isLoading && !["dashboard","analytics","leads","activity","security","seo","redirects","media-library"].includes(tab) && <Loader2 className="animate-spin text-[#38BDF8]" />}
-        {content.data && !["dashboard","analytics","leads","activity","security","seo","redirects","media-library"].includes(tab) && (
+        {tab === "users" && <UsersRolesPanel />}
+        {tab === "projects" && <ProjectsPanel />}
+        {tab === "backups" && <BackupsPanel />}
+        {content.isLoading && !NEW_TABS.includes(tab) && <Loader2 className="animate-spin text-[#38BDF8]" />}
+        {content.data && !NEW_TABS.includes(tab) && (
+
 
           <>
             {tab === "portfolio" && (
