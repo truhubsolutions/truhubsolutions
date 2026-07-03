@@ -47,6 +47,48 @@ export type Database = {
         }
         Relationships: []
       }
+      activity_logs: {
+        Row: {
+          action: string
+          actor_email: string | null
+          actor_id: string | null
+          created_at: string
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          ip_address: string | null
+          new_data: Json | null
+          old_data: Json | null
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          actor_email?: string | null
+          actor_id?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          ip_address?: string | null
+          new_data?: Json | null
+          old_data?: Json | null
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          actor_email?: string | null
+          actor_id?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          ip_address?: string | null
+          new_data?: Json | null
+          old_data?: Json | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       additional_services: {
         Row: {
           created_at: string
@@ -71,6 +113,36 @@ export type Database = {
           price?: string
           sort_order?: number
           updated_at?: string
+        }
+        Relationships: []
+      }
+      admin_profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          last_password_change_at: string | null
+          two_factor_enabled: boolean
+          two_factor_secret: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          last_password_change_at?: string | null
+          two_factor_enabled?: boolean
+          two_factor_secret?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          last_password_change_at?: string | null
+          two_factor_enabled?: boolean
+          two_factor_secret?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -280,34 +352,58 @@ export type Database = {
       }
       contact_submissions: {
         Row: {
+          assigned_to: string | null
           business_name: string | null
           created_at: string
           email: string
+          follow_up_at: string | null
           id: string
           is_read: boolean
+          lead_score: number
           name: string
+          notes: string | null
           phone: string | null
+          priority: Database["public"]["Enums"]["lead_priority"]
           project_details: string
+          source: string | null
+          status: Database["public"]["Enums"]["lead_status"]
+          updated_at: string
         }
         Insert: {
+          assigned_to?: string | null
           business_name?: string | null
           created_at?: string
           email: string
+          follow_up_at?: string | null
           id?: string
           is_read?: boolean
+          lead_score?: number
           name: string
+          notes?: string | null
           phone?: string | null
+          priority?: Database["public"]["Enums"]["lead_priority"]
           project_details: string
+          source?: string | null
+          status?: Database["public"]["Enums"]["lead_status"]
+          updated_at?: string
         }
         Update: {
+          assigned_to?: string | null
           business_name?: string | null
           created_at?: string
           email?: string
+          follow_up_at?: string | null
           id?: string
           is_read?: boolean
+          lead_score?: number
           name?: string
+          notes?: string | null
           phone?: string | null
+          priority?: Database["public"]["Enums"]["lead_priority"]
           project_details?: string
+          source?: string | null
+          status?: Database["public"]["Enums"]["lead_status"]
+          updated_at?: string
         }
         Relationships: []
       }
@@ -395,6 +491,83 @@ export type Database = {
           id?: string
           subtitle?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      lead_timeline: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          event_type: string
+          id: string
+          lead_id: string
+          message: string | null
+          meta: Json
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          event_type: string
+          id?: string
+          lead_id: string
+          message?: string | null
+          meta?: Json
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          event_type?: string
+          id?: string
+          lead_id?: string
+          message?: string | null
+          meta?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_timeline_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "contact_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      login_history: {
+        Row: {
+          city: string | null
+          country: string | null
+          created_at: string
+          email: string | null
+          failure_reason: string | null
+          id: string
+          ip_address: string | null
+          success: boolean
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          email?: string | null
+          failure_reason?: string | null
+          id?: string
+          ip_address?: string | null
+          success: boolean
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          email?: string | null
+          failure_reason?: string | null
+          id?: string
+          ip_address?: string | null
+          success?: boolean
+          user_agent?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -680,6 +853,15 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      lead_priority: "low" | "medium" | "high" | "urgent"
+      lead_status:
+        | "new"
+        | "contacted"
+        | "qualified"
+        | "proposal"
+        | "won"
+        | "lost"
+        | "archived"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -808,6 +990,16 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      lead_priority: ["low", "medium", "high", "urgent"],
+      lead_status: [
+        "new",
+        "contacted",
+        "qualified",
+        "proposal",
+        "won",
+        "lost",
+        "archived",
+      ],
     },
   },
 } as const
