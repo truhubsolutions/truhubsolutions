@@ -246,8 +246,11 @@ function Dashboard({ email, onSignOut }: { email: string; onSignOut: () => void 
       <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-6">
         {tab === "dashboard" && <DashboardOverview onNavigate={(t) => setTab(t as Tab)} />}
         {tab === "analytics" && <AnalyticsPanel />}
-        {content.isLoading && tab !== "dashboard" && tab !== "analytics" && <Loader2 className="animate-spin text-[#38BDF8]" />}
-        {content.data && tab !== "dashboard" && tab !== "analytics" && (
+        {tab === "leads" && <LeadsPanel />}
+        {tab === "activity" && <ActivityPanel />}
+        {tab === "security" && <SecurityPanel />}
+        {content.isLoading && !["dashboard","analytics","leads","activity","security"].includes(tab) && <Loader2 className="animate-spin text-[#38BDF8]" />}
+        {content.data && !["dashboard","analytics","leads","activity","security"].includes(tab) && (
           <>
             {tab === "portfolio" && (
               <ListEditor table="portfolio_items" title="Portfolio" rows={content.data.portfolio}
