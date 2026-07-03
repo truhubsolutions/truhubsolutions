@@ -26,8 +26,9 @@ export function Founder({
               Meet the Founder
             </div>
             <h2 className="font-display text-4xl font-bold sm:text-5xl">
-              <span className="text-gradient">The vision behind TruHub</span>
+              <span className="text-gradient">The mind behind the mission</span>
             </h2>
+
           </div>
         </Reveal>
 
