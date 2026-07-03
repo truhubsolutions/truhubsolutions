@@ -64,7 +64,7 @@ export function BackupsPanel() {
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
-              {(q.data ?? []).map((b: { id: string; created_at: string; kind: string; tables_count: number; rows_count: number; size_bytes: number }) => (
+              {(q.data ?? []).map((b: any) => (
                 <tr key={b.id}>
                   <td className="px-4 py-3 text-xs text-white/70">{new Date(b.created_at).toLocaleString()}</td>
                   <td className="px-4 py-3 text-xs capitalize">{b.kind}</td>
