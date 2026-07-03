@@ -89,7 +89,7 @@ export function Hero({
               <motion.img
                 src={truhubLogo.url}
                 alt="TruHub Solutions"
-                className="relative h-28 w-28 object-contain sm:h-36 sm:w-36"
+                className="relative h-28 w-28 rounded-[2rem] border border-white/10 bg-white/[0.03] p-2 object-contain backdrop-blur-xl sm:h-36 sm:w-36"
                 animate={{ y: [0, -8, 0] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                 style={{ filter: "drop-shadow(0 10px 40px rgba(30,167,255,0.55))" }}
