@@ -2,35 +2,31 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 
-const rangeSchema = z.object({
-  from: z.string(),
-  to: z.string(),
-});
+const rangeSchema = z.object({ from: z.string(), to: z.string() });
 
-async function ensureAdmin(context: { supabase: ReturnType<typeof requireSupabaseAuth>["_"] extends never ? never : never; userId: string; }) {
-  // supabase client is on context.supabase in real middleware; use it
+async function assertAdmin(sb: { from: (t: "user_roles") => { select: (c: "role") => { eq: (col: "user_id", v: string) => { eq: (col: "role", v: "admin") => { maybeSingle: () => Promise<{ data: unknown; error: { message: string } | null }> } } } } }, userId: string) {
+  const { data, error } = await sb.from("user_roles").select("role").eq("user_id", userId).eq("role", "admin").maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!data) throw new Error("Forbidden: admin only");
 }
 
 export const getAnalyticsOverview = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { from: string; to: string }) => rangeSchema.parse(d))
   .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase as never, context.userId);
     const sb = context.supabase;
-    const { data: isAdmin } = await sb.rpc("has_role", { _user_id: context.userId, _role: "admin" } as never);
-    if (!isAdmin) throw new Error("Forbidden");
-
     const from = new Date(data.from).toISOString();
     const to = new Date(data.to).toISOString();
 
     const [
-      pageViews, sessions, uniqueVisitors, returningSessions, live, subs, ctaClicks, avgSess,
-      topPages, exitPages, sources, devices, browsers, oses, countries, screens, dailyRows,
+      pageViews, sessionsCount, returningSessions, live, subs, ctaClicks, sessRows,
+      topPages, exitPages, sources, devices, browsers, oses, countries, screens, dailyRows, uniqRows,
     ] = await Promise.all([
       sb.from("analytics_events").select("*", { count: "exact", head: true })
         .gte("created_at", from).lte("created_at", to).eq("event_type", "page_view"),
       sb.from("analytics_sessions").select("*", { count: "exact", head: true })
         .gte("started_at", from).lte("started_at", to),
-      sb.rpc("count_unique_visitors", { _from: from, _to: to } as never).then(r => r).catch(() => ({ data: null, error: null })),
       sb.from("analytics_sessions").select("*", { count: "exact", head: true })
         .gte("started_at", from).lte("started_at", to).eq("is_returning", true),
       sb.from("analytics_sessions").select("*", { count: "exact", head: true })
@@ -40,7 +36,7 @@ export const getAnalyticsOverview = createServerFn({ method: "POST" })
       sb.from("analytics_events").select("*", { count: "exact", head: true })
         .gte("created_at", from).lte("created_at", to).eq("event_type", "cta_click"),
       sb.from("analytics_sessions").select("started_at,last_seen_at,is_bounce")
-        .gte("started_at", from).lte("started_at", to),
+        .gte("started_at", from).lte("started_at", to).limit(10000),
       sb.from("analytics_events").select("path")
         .gte("created_at", from).lte("created_at", to).eq("event_type", "page_view").limit(5000),
       sb.from("analytics_sessions").select("exit_path").gte("started_at", from).lte("started_at", to).limit(5000),
@@ -53,6 +49,8 @@ export const getAnalyticsOverview = createServerFn({ method: "POST" })
         .gte("created_at", from).lte("created_at", to).eq("event_type", "page_view").limit(5000),
       sb.from("analytics_events").select("created_at")
         .gte("created_at", from).lte("created_at", to).eq("event_type", "page_view").limit(20000),
+      sb.from("analytics_sessions").select("visitor_id")
+        .gte("started_at", from).lte("started_at", to).limit(20000),
     ]);
 
     const tally = (rows: Array<Record<string, unknown>> | null, key: string) => {
@@ -61,16 +59,14 @@ export const getAnalyticsOverview = createServerFn({ method: "POST" })
         const v = (r?.[key] as string) || "unknown";
         m.set(v, (m.get(v) ?? 0) + 1);
       }
-      return [...m.entries()].map(([label, value]) => ({ label, value }))
-        .sort((a, b) => b.value - a.value);
+      return [...m.entries()].map(([label, value]) => ({ label, value })).sort((a, b) => b.value - a.value);
     };
 
-    const sessionsList = (avgSess.data as Array<{ started_at: string; last_seen_at: string; is_bounce: boolean }>) ?? [];
-    const durations = sessionsList.map(s => Math.max(0, new Date(s.last_seen_at).getTime() - new Date(s.started_at).getTime()));
+    const sessList = (sessRows.data as Array<{ started_at: string; last_seen_at: string; is_bounce: boolean }>) ?? [];
+    const durations = sessList.map(s => Math.max(0, new Date(s.last_seen_at).getTime() - new Date(s.started_at).getTime()));
     const avgDurationMs = durations.length ? durations.reduce((a, b) => a + b, 0) / durations.length : 0;
-    const bounceRate = sessionsList.length ? (sessionsList.filter(s => s.is_bounce).length / sessionsList.length) * 100 : 0;
+    const bounceRate = sessList.length ? (sessList.filter(s => s.is_bounce).length / sessList.length) * 100 : 0;
 
-    // Daily bucket
     const daily = new Map<string, number>();
     for (const r of (dailyRows.data as Array<{ created_at: string }>) ?? []) {
       const d = r.created_at.slice(0, 10);
@@ -78,22 +74,24 @@ export const getAnalyticsOverview = createServerFn({ method: "POST" })
     }
     const dailySeries = [...daily.entries()].sort().map(([date, views]) => ({ date, views }));
 
-    // Screens bucket
+    const uniqueSet = new Set<string>();
+    for (const r of (uniqRows.data as Array<{ visitor_id: string }>) ?? []) uniqueSet.add(r.visitor_id);
+
     const screenTally = new Map<string, number>();
-    for (const r of (screens.data as Array<{ screen_w: number | null; screen_h: number | null }>) ?? []) {
+    for (const r of (screens.data as Array<{ screen_w: number | null }>) ?? []) {
       if (!r.screen_w) continue;
       const bucket = r.screen_w < 640 ? "<640" : r.screen_w < 1024 ? "640–1023" : r.screen_w < 1440 ? "1024–1439" : r.screen_w < 1920 ? "1440–1919" : "≥1920";
       screenTally.set(bucket, (screenTally.get(bucket) ?? 0) + 1);
     }
 
-    const totalSessions = sessions.count ?? 0;
+    const totalSessions = sessionsCount.count ?? 0;
     const submissions = subs.count ?? 0;
 
     return {
       kpis: {
         pageViews: pageViews.count ?? 0,
         sessions: totalSessions,
-        uniqueVisitors: (uniqueVisitors.data as unknown as number) ?? 0,
+        uniqueVisitors: uniqueSet.size,
         returningSessions: returningSessions.count ?? 0,
         live: live.count ?? 0,
         submissions,
@@ -117,23 +115,18 @@ export const getAnalyticsOverview = createServerFn({ method: "POST" })
 export const getLiveVisitors = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { data: isAdmin } = await context.supabase.rpc("has_role",
-      { _user_id: context.userId, _role: "admin" } as never);
-    if (!isAdmin) throw new Error("Forbidden");
+    await assertAdmin(context.supabase as never, context.userId);
     const cutoff = new Date(Date.now() - 5 * 60_000).toISOString();
     const { count } = await context.supabase.from("analytics_sessions")
-      .select("*", { count: "exact", head: true })
-      .gte("last_seen_at", cutoff);
+      .select("*", { count: "exact", head: true }).gte("last_seen_at", cutoff);
     return { live: count ?? 0 };
   });
 
 export const getDashboardStats = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
+    await assertAdmin(context.supabase as never, context.userId);
     const sb = context.supabase;
-    const { data: isAdmin } = await sb.rpc("has_role",
-      { _user_id: context.userId, _role: "admin" } as never);
-    if (!isAdmin) throw new Error("Forbidden");
     const todayStart = new Date(); todayStart.setUTCHours(0, 0, 0, 0);
     const monthStart = new Date(); monthStart.setUTCDate(1); monthStart.setUTCHours(0, 0, 0, 0);
     const [visitorsToday, viewsToday, subsMonth, subsTotal, blogs, portfolio, services, testimonials, recentSubs] =
@@ -146,7 +139,7 @@ export const getDashboardStats = createServerFn({ method: "GET" })
         sb.from("portfolio_items").select("*", { count: "exact", head: true }),
         sb.from("services").select("*", { count: "exact", head: true }),
         sb.from("testimonials").select("*", { count: "exact", head: true }),
-        sb.from("contact_submissions").select("id,name,email,service,created_at").order("created_at", { ascending: false }).limit(5),
+        sb.from("contact_submissions").select("id,name,email,service,created_at").order("created_at", { ascending: false }).limit(6),
       ]);
     return {
       visitorsToday: visitorsToday.count ?? 0,
