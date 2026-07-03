@@ -20,7 +20,12 @@ import { SecurityPanel } from "@/components/admin/security-panel";
 import { SeoPanel } from "@/components/admin/seo-panel";
 import { RedirectsPanel } from "@/components/admin/redirects-panel";
 import { MediaLibraryPanel } from "@/components/admin/media-library-panel";
+import { UsersRolesPanel } from "@/components/admin/users-roles-panel";
+import { ProjectsPanel } from "@/components/admin/projects-panel";
+import { BackupsPanel } from "@/components/admin/backups-panel";
+import { CommandPalette } from "@/components/admin/command-palette";
 import { recordLoginAttempt } from "@/lib/security/security.functions";
+
 
 
 export const Route = createFileRoute("/admin")({
