@@ -58,21 +58,24 @@ export const updateExtendedSettings = createServerFn({ method: "POST" })
     await requireAdmin(context as never);
     const { data: existing } = await context.supabase
       .from("site_settings").select("*").limit(1).maybeSingle();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const payload = data as any;
     let result;
     if (existing) {
       const { data: updated, error } = await context.supabase
-        .from("site_settings").update(data).eq("id", existing.id).select().single();
+        .from("site_settings").update(payload).eq("id", existing.id).select().single();
       if (error) throw new Error(error.message);
       result = updated;
     } else {
       const { data: inserted, error } = await context.supabase
-        .from("site_settings").insert(data).select().single();
+        .from("site_settings").insert(payload).select().single();
       if (error) throw new Error(error.message);
       result = inserted;
     }
-    await logActivity(context, "update", "site_settings", result.id ?? "singleton", existing, result);
+    await logActivity(context, "update", "site_settings", String(result?.id ?? "singleton"), existing, result);
     return result;
   });
+
 
 /* ---------------- PAGE SEO ---------------- */
 
