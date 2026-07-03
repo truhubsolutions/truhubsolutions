@@ -178,11 +178,14 @@ function AuthCard({ onDone }: { onDone: () => void }) {
 
 // ==================== DASHBOARD ====================
 type Tab =
+  | "dashboard" | "analytics"
   | "sections" | "portfolio" | "services" | "why" | "pricing" | "addons" | "testimonials" | "faqs"
   | "hero" | "about" | "founder" | "process" | "contact" | "submissions" | "media"
   | "blog" | "settings";
 
 const TABS: { id: Tab; label: string }[] = [
+  { id: "dashboard", label: "Dashboard" },
+  { id: "analytics", label: "Analytics" },
   { id: "sections", label: "Section Text" },
   { id: "hero", label: "Hero" },
   { id: "about", label: "About" },
@@ -203,7 +206,7 @@ const TABS: { id: Tab; label: string }[] = [
 ];
 
 function Dashboard({ email, onSignOut }: { email: string; onSignOut: () => void }) {
-  const [tab, setTab] = useState<Tab>("sections");
+  const [tab, setTab] = useState<Tab>("dashboard");
   const qc = useQueryClient();
   const content = useQuery({ queryKey: ["admin-content"], queryFn: () => getSiteContent(), staleTime: 0 });
 
