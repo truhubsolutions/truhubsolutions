@@ -176,19 +176,22 @@ function AuthCard({ onDone }: { onDone: () => void }) {
 
 // ==================== DASHBOARD ====================
 type Tab =
-  | "portfolio" | "services" | "pricing" | "addons" | "testimonials" | "faqs"
-  | "hero" | "about" | "founder" | "contact" | "submissions" | "media";
+  | "sections" | "portfolio" | "services" | "why" | "pricing" | "addons" | "testimonials" | "faqs"
+  | "hero" | "about" | "founder" | "process" | "contact" | "submissions" | "media";
 
 const TABS: { id: Tab; label: string }[] = [
-  { id: "portfolio", label: "Portfolio" },
-  { id: "services", label: "Services" },
-  { id: "pricing", label: "Pricing" },
-  { id: "addons", label: "Add-ons" },
-  { id: "testimonials", label: "Testimonials" },
-  { id: "faqs", label: "FAQs" },
+  { id: "sections", label: "Section Text" },
   { id: "hero", label: "Hero" },
   { id: "about", label: "About" },
+  { id: "services", label: "Services" },
+  { id: "why", label: "Why Choose Us" },
+  { id: "pricing", label: "Pricing" },
+  { id: "addons", label: "Add-ons" },
+  { id: "portfolio", label: "Portfolio" },
   { id: "founder", label: "Founder" },
+  { id: "process", label: "Process Steps" },
+  { id: "testimonials", label: "Testimonials" },
+  { id: "faqs", label: "FAQs" },
   { id: "contact", label: "Contact Info" },
   { id: "submissions", label: "Submissions" },
   { id: "media", label: "Media" },
