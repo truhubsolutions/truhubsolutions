@@ -144,7 +144,7 @@ function AuthCard({ onDone }: { onDone: () => void }) {
 // ==================== DASHBOARD ====================
 type Tab =
   | "dashboard" | "analytics" | "leads" | "activity" | "security"
-  | "users" | "projects" | "backups"
+  | "users" | "projects" | "messages" | "backups"
   | "sections" | "portfolio" | "services" | "why" | "pricing" | "addons" | "testimonials" | "faqs"
   | "hero" | "about" | "founder" | "process" | "contact" | "submissions" | "media"
   | "blog" | "settings" | "seo" | "redirects" | "media-library";
@@ -154,6 +154,7 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "analytics", label: "Analytics" },
   { id: "leads", label: "Leads" },
   { id: "projects", label: "Projects" },
+  { id: "messages", label: "Messages" },
   { id: "users", label: "Users & Roles" },
   { id: "activity", label: "Activity" },
   { id: "security", label: "Security" },
@@ -180,7 +181,7 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "media", label: "Media (legacy)" },
 ];
 
-const NEW_TABS = ["dashboard","analytics","leads","activity","security","seo","redirects","media-library","users","projects","backups"];
+const NEW_TABS = ["dashboard","analytics","leads","activity","security","seo","redirects","media-library","users","projects","messages","backups"];
 
 
 
