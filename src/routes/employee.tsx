@@ -3,10 +3,10 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Loader2, LogOut, KeyRound } from "lucide-react";
+import { Loader2, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  verifyEmployeeCode, checkEmployeeAccess,
+  checkEmployeeAccess,
   listAllProjects, updateProjectStatus, listProjectMessages, sendProjectMessage,
 } from "@/lib/portal/portal.functions";
 import { recordLoginAttempt } from "@/lib/security/security.functions";
@@ -20,22 +20,21 @@ export const Route = createFileRoute("/employee")({
   component: EmployeePage,
 });
 
-type Stage = "code" | "auth" | "loading" | "denied" | "ready";
+type Stage = "auth" | "loading" | "denied" | "ready";
 
 function EmployeePage() {
-  const [stage, setStage] = useState<Stage>("code");
-  const [code, setCode] = useState("");
+  const [stage, setStage] = useState<Stage>("loading");
   const [session, setSession] = useState<{ user: { email?: string | null; id: string } } | null>(null);
-  const verify = useServerFn(verifyEmployeeCode);
   const check = useServerFn(checkEmployeeAccess);
 
   useEffect(() => {
-    const savedCode = sessionStorage.getItem("truhub_employee_code");
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) setSession({ user: data.session.user });
-      if (savedCode && data.session) doCheck();
-      else if (savedCode) setStage("auth");
-      else setStage("code");
+      if (data.session) {
+        setSession({ user: data.session.user });
+        doCheck();
+      } else {
+        setStage("auth");
+      }
     });
     const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setSession(s ? { user: s.user } : null));
     return () => sub.subscription.unsubscribe();
@@ -46,39 +45,18 @@ function EmployeePage() {
     setStage("loading");
     try {
       const r = await check();
-      if (r.isEmployee) setStage("ready");
-      else setStage("denied");
+      setStage(r.isEmployee ? "ready" : "denied");
     } catch { setStage("denied"); }
-  }
-
-  async function onCode(e: React.FormEvent) {
-    e.preventDefault();
-    const { ok } = await verify({ data: { code } });
-    if (!ok) { toast.error("Invalid access code"); return; }
-    sessionStorage.setItem("truhub_employee_code", code);
-    setStage(session ? "loading" : "auth");
-    if (session) doCheck();
   }
 
   async function signOut() {
     await supabase.auth.signOut();
-    sessionStorage.removeItem("truhub_employee_code");
-    setStage("code");
+    setStage("auth");
   }
 
   return (
     <div className="min-h-screen bg-[#030712] text-white">
       <div className="mx-auto max-w-6xl px-4 py-10">
-        {stage === "code" && (
-          <div className="mx-auto max-w-md rounded-3xl border border-white/10 bg-[#0B1220] p-8">
-            <div className="mb-4 flex items-center gap-2 text-[#38BDF8]"><KeyRound size={18} /> <span className="text-xs uppercase tracking-wide">Employee access</span></div>
-            <h1 className="font-display text-2xl font-semibold">Enter access code</h1>
-            <form onSubmit={onCode} className="mt-6 space-y-3">
-              <input value={code} onChange={e => setCode(e.target.value)} type="password" placeholder="Access code" className="input" required />
-              <button className="btn-primary btn-primary-hover w-full">Continue</button>
-            </form>
-          </div>
-        )}
         {stage === "auth" && !session && <EmployeeAuth onDone={() => doCheck()} />}
         {stage === "loading" && <Loader2 className="mx-auto animate-spin text-[#38BDF8]" />}
         {stage === "denied" && (

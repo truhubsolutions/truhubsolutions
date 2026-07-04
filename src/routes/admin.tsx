@@ -3,10 +3,10 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { KeyRound, LogOut, Trash2, Upload, Plus, Loader2 } from "lucide-react";
+import { LogOut, Trash2, Upload, Plus, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  verifyAdminCode, bootstrapAdmin, getMyRole,
+  getMyRole,
   adminUpsert, adminDelete, adminUploadMedia,
   adminListSubmissions, adminDeleteSubmission, adminListMedia,
   getSiteContent, getSiteSettings, listBlogPosts,
@@ -23,6 +23,7 @@ import { MediaLibraryPanel } from "@/components/admin/media-library-panel";
 import { UsersRolesPanel } from "@/components/admin/users-roles-panel";
 import { ProjectsPanel } from "@/components/admin/projects-panel";
 import { BackupsPanel } from "@/components/admin/backups-panel";
+import { MessagesPanel } from "@/components/admin/messages-panel";
 import { CommandPalette } from "@/components/admin/command-palette";
 import { recordLoginAttempt } from "@/lib/security/security.functions";
 
@@ -34,24 +35,21 @@ export const Route = createFileRoute("/admin")({
   component: AdminPage,
 });
 
-type Stage = "code" | "auth" | "loading" | "denied" | "ready";
+type Stage = "auth" | "loading" | "denied" | "ready";
 
 function AdminPage() {
-  const [stage, setStage] = useState<Stage>("code");
-  const [code, setCode] = useState("");
+  const [stage, setStage] = useState<Stage>("loading");
   const [session, setSession] = useState<{ user: { email?: string | null; id: string } } | null>(null);
-  const verify = useServerFn(verifyAdminCode);
-  const bootstrap = useServerFn(bootstrapAdmin);
   const role = useServerFn(getMyRole);
 
-  // Bootstrap: check code memory + session
   useEffect(() => {
-    const savedCode = sessionStorage.getItem("truhub_admin_code");
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) setSession({ user: data.session.user });
-      if (savedCode && data.session) checkRole();
-      else if (savedCode) setStage("auth");
-      else setStage("code");
+      if (data.session) {
+        setSession({ user: data.session.user });
+        checkRole();
+      } else {
+        setStage("auth");
+      }
     });
     const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
       setSession(s ? { user: s.user } : null);
@@ -64,64 +62,25 @@ function AdminPage() {
     setStage("loading");
     try {
       const r = await role();
-      if (r.isAdmin) setStage("ready");
-      else {
-        // Try to auto-bootstrap using stored code
-        const c = sessionStorage.getItem("truhub_admin_code");
-        if (c) {
-          try {
-            await bootstrap({ data: { code: c } });
-            setStage("ready");
-            toast.success("Admin access granted");
-            return;
-          } catch { /* fall through */ }
-        }
-        setStage("denied");
-      }
+      setStage(r.isAdmin ? "ready" : "denied");
     } catch {
       setStage("denied");
     }
   }
 
-  async function onCode(e: React.FormEvent) {
-    e.preventDefault();
-    const { ok } = await verify({ data: { code } });
-    if (!ok) { toast.error("Invalid access code"); return; }
-    sessionStorage.setItem("truhub_admin_code", code);
-    toast.success("Access code verified");
-    if (session) checkRole();
-    else setStage("auth");
-  }
-
   async function onSignOut() {
     await supabase.auth.signOut();
-    sessionStorage.removeItem("truhub_admin_code");
     setSession(null);
-    setStage("code");
+    setStage("auth");
   }
 
   return (
     <div className="min-h-screen bg-background text-white">
       <div className="container-x py-10">
-        {stage === "code" && (
-          <CenterCard title="Enter Access Code" subtitle="Restricted area — authorized personnel only.">
-            <form onSubmit={onCode} className="space-y-4">
-              <div className="relative">
-                <KeyRound size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#38BDF8]" />
-                <input
-                  autoFocus type="password" value={code} onChange={(e) => setCode(e.target.value)}
-                  placeholder="Secret access code"
-                  className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-10 py-3 text-sm outline-none focus:border-[#38BDF8]"
-                />
-              </div>
-              <button type="submit" className="btn-primary btn-primary-hover w-full">Continue</button>
-            </form>
-          </CenterCard>
-        )}
         {stage === "auth" && <AuthCard onDone={checkRole} />}
         {stage === "loading" && <Center><Loader2 className="animate-spin text-[#38BDF8]" /></Center>}
         {stage === "denied" && (
-          <CenterCard title="Access denied" subtitle="Your account isn't an admin. Sign out and retry with the correct account.">
+          <CenterCard title="Access denied" subtitle="Your account isn't an admin. Ask an existing admin to grant you the admin role, or sign in with an admin account.">
             <button onClick={onSignOut} className="btn-ghost btn-ghost-hover w-full">Sign out</button>
           </CenterCard>
         )}
@@ -147,7 +106,6 @@ function CenterCard({ title, subtitle, children }: { title: string; subtitle?: s
 }
 
 function AuthCard({ onDone }: { onDone: () => void }) {
-  const [mode, setMode] = useState<"in" | "up">("in");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -157,20 +115,12 @@ function AuthCard({ onDone }: { onDone: () => void }) {
     e.preventDefault();
     setBusy(true);
     try {
-      if (mode === "in") {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) {
-          logAttempt({ data: { email, success: false, failure_reason: error.message, user_agent: navigator.userAgent } }).catch(() => {});
-          throw error;
-        }
-        logAttempt({ data: { email, success: true, user_agent: navigator.userAgent } }).catch(() => {});
-      } else {
-        const { error } = await supabase.auth.signUp({
-          email, password,
-          options: { emailRedirectTo: `${window.location.origin}/admin` },
-        });
-        if (error) throw error;
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        logAttempt({ data: { email, success: false, failure_reason: error.message, user_agent: navigator.userAgent } }).catch(() => {});
+        throw error;
       }
+      logAttempt({ data: { email, success: true, user_agent: navigator.userAgent } }).catch(() => {});
       onDone();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Auth failed");
@@ -179,15 +129,12 @@ function AuthCard({ onDone }: { onDone: () => void }) {
 
   const field = "w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm outline-none focus:border-[#38BDF8]";
   return (
-    <CenterCard title={mode === "in" ? "Admin Sign In" : "Create Admin Account"} subtitle="Access code verified.">
+    <CenterCard title="Admin Sign In" subtitle="Sign in with your admin account.">
       <form onSubmit={onSubmit} className="space-y-3">
         <input required type="email" placeholder="Email" className={field} value={email} onChange={(e) => setEmail(e.target.value)} />
-        <input required type="password" placeholder="Password (min 6 chars)" className={field} value={password} onChange={(e) => setPassword(e.target.value)} />
+        <input required type="password" placeholder="Password" className={field} value={password} onChange={(e) => setPassword(e.target.value)} />
         <button disabled={busy} type="submit" className="btn-primary btn-primary-hover w-full">
-          {busy ? "…" : mode === "in" ? "Sign in" : "Create account"}
-        </button>
-        <button type="button" onClick={() => setMode(mode === "in" ? "up" : "in")} className="w-full text-xs text-white/50 hover:text-white">
-          {mode === "in" ? "First time? Create admin account" : "Have an account? Sign in"}
+          {busy ? "…" : "Sign in"}
         </button>
       </form>
     </CenterCard>
@@ -197,7 +144,7 @@ function AuthCard({ onDone }: { onDone: () => void }) {
 // ==================== DASHBOARD ====================
 type Tab =
   | "dashboard" | "analytics" | "leads" | "activity" | "security"
-  | "users" | "projects" | "backups"
+  | "users" | "projects" | "messages" | "backups"
   | "sections" | "portfolio" | "services" | "why" | "pricing" | "addons" | "testimonials" | "faqs"
   | "hero" | "about" | "founder" | "process" | "contact" | "submissions" | "media"
   | "blog" | "settings" | "seo" | "redirects" | "media-library";
@@ -207,6 +154,7 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "analytics", label: "Analytics" },
   { id: "leads", label: "Leads" },
   { id: "projects", label: "Projects" },
+  { id: "messages", label: "Messages" },
   { id: "users", label: "Users & Roles" },
   { id: "activity", label: "Activity" },
   { id: "security", label: "Security" },
@@ -233,7 +181,7 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "media", label: "Media (legacy)" },
 ];
 
-const NEW_TABS = ["dashboard","analytics","leads","activity","security","seo","redirects","media-library","users","projects","backups"];
+const NEW_TABS = ["dashboard","analytics","leads","activity","security","seo","redirects","media-library","users","projects","messages","backups"];
 
 
 
@@ -280,6 +228,7 @@ function Dashboard({ email, onSignOut }: { email: string; onSignOut: () => void 
         {tab === "users" && <UsersRolesPanel />}
         {tab === "projects" && <ProjectsPanel />}
         {tab === "backups" && <BackupsPanel />}
+        {tab === "messages" && <MessagesPanel />}
         {content.isLoading && !NEW_TABS.includes(tab) && <Loader2 className="animate-spin text-[#38BDF8]" />}
         {content.data && !NEW_TABS.includes(tab) && (
 
