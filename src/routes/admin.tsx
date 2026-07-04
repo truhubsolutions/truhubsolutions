@@ -115,20 +115,12 @@ function AuthCard({ onDone }: { onDone: () => void }) {
     e.preventDefault();
     setBusy(true);
     try {
-      {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) {
-          logAttempt({ data: { email, success: false, failure_reason: error.message, user_agent: navigator.userAgent } }).catch(() => {});
-          throw error;
-        }
-        logAttempt({ data: { email, success: true, user_agent: navigator.userAgent } }).catch(() => {});
-      } else {
-        const { error } = await supabase.auth.signUp({
-          email, password,
-          options: { emailRedirectTo: `${window.location.origin}/admin` },
-        });
-        if (error) throw error;
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        logAttempt({ data: { email, success: false, failure_reason: error.message, user_agent: navigator.userAgent } }).catch(() => {});
+        throw error;
       }
+      logAttempt({ data: { email, success: true, user_agent: navigator.userAgent } }).catch(() => {});
       onDone();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Auth failed");
@@ -137,15 +129,12 @@ function AuthCard({ onDone }: { onDone: () => void }) {
 
   const field = "w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm outline-none focus:border-[#38BDF8]";
   return (
-    <CenterCard title={mode === "in" ? "Admin Sign In" : "Create Admin Account"} subtitle="Access code verified.">
+    <CenterCard title="Admin Sign In" subtitle="Sign in with your admin account.">
       <form onSubmit={onSubmit} className="space-y-3">
         <input required type="email" placeholder="Email" className={field} value={email} onChange={(e) => setEmail(e.target.value)} />
-        <input required type="password" placeholder="Password (min 6 chars)" className={field} value={password} onChange={(e) => setPassword(e.target.value)} />
+        <input required type="password" placeholder="Password" className={field} value={password} onChange={(e) => setPassword(e.target.value)} />
         <button disabled={busy} type="submit" className="btn-primary btn-primary-hover w-full">
-          {busy ? "…" : mode === "in" ? "Sign in" : "Create account"}
-        </button>
-        <button type="button" onClick={() => setMode(mode === "in" ? "up" : "in")} className="w-full text-xs text-white/50 hover:text-white">
-          {mode === "in" ? "First time? Create admin account" : "Have an account? Sign in"}
+          {busy ? "…" : "Sign in"}
         </button>
       </form>
     </CenterCard>
