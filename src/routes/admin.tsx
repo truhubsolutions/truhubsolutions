@@ -228,6 +228,7 @@ function Dashboard({ email, onSignOut }: { email: string; onSignOut: () => void 
         {tab === "users" && <UsersRolesPanel />}
         {tab === "projects" && <ProjectsPanel />}
         {tab === "backups" && <BackupsPanel />}
+        {tab === "messages" && <MessagesPanel />}
         {content.isLoading && !NEW_TABS.includes(tab) && <Loader2 className="animate-spin text-[#38BDF8]" />}
         {content.data && !NEW_TABS.includes(tab) && (
 
