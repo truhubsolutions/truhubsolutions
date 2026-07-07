@@ -19,6 +19,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as DemoSlugRouteImport } from './routes/demo.$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as AdminDemosRouteImport } from './routes/admin.demos'
 import { Route as ApiPublicTrackRouteImport } from './routes/api/public/track'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -71,6 +72,11 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminDemosRoute = AdminDemosRouteImport.update({
+  id: '/demos',
+  path: '/demos',
+  getParentRoute: () => AdminRoute,
+} as any)
 const ApiPublicTrackRoute = ApiPublicTrackRouteImport.update({
   id: '/api/public/track',
   path: '/api/public/track',
@@ -79,12 +85,13 @@ const ApiPublicTrackRoute = ApiPublicTrackRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/blog': typeof BlogRouteWithChildren
   '/demo': typeof DemoRouteWithChildren
   '/employee': typeof EmployeeRoute
   '/portal': typeof PortalRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin/demos': typeof AdminDemosRoute
   '/api/chat': typeof ApiChatRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/demo/$slug': typeof DemoSlugRoute
@@ -92,12 +99,13 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/blog': typeof BlogRouteWithChildren
   '/demo': typeof DemoRouteWithChildren
   '/employee': typeof EmployeeRoute
   '/portal': typeof PortalRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin/demos': typeof AdminDemosRoute
   '/api/chat': typeof ApiChatRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/demo/$slug': typeof DemoSlugRoute
@@ -106,12 +114,13 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/blog': typeof BlogRouteWithChildren
   '/demo': typeof DemoRouteWithChildren
   '/employee': typeof EmployeeRoute
   '/portal': typeof PortalRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin/demos': typeof AdminDemosRoute
   '/api/chat': typeof ApiChatRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/demo/$slug': typeof DemoSlugRoute
@@ -127,6 +136,7 @@ export interface FileRouteTypes {
     | '/employee'
     | '/portal'
     | '/sitemap.xml'
+    | '/admin/demos'
     | '/api/chat'
     | '/blog/$slug'
     | '/demo/$slug'
@@ -140,6 +150,7 @@ export interface FileRouteTypes {
     | '/employee'
     | '/portal'
     | '/sitemap.xml'
+    | '/admin/demos'
     | '/api/chat'
     | '/blog/$slug'
     | '/demo/$slug'
@@ -153,6 +164,7 @@ export interface FileRouteTypes {
     | '/employee'
     | '/portal'
     | '/sitemap.xml'
+    | '/admin/demos'
     | '/api/chat'
     | '/blog/$slug'
     | '/demo/$slug'
@@ -161,7 +173,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRoute
+  AdminRoute: typeof AdminRouteWithChildren
   BlogRoute: typeof BlogRouteWithChildren
   DemoRoute: typeof DemoRouteWithChildren
   EmployeeRoute: typeof EmployeeRoute
@@ -243,6 +255,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/demos': {
+      id: '/admin/demos'
+      path: '/demos'
+      fullPath: '/admin/demos'
+      preLoaderRoute: typeof AdminDemosRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/api/public/track': {
       id: '/api/public/track'
       path: '/api/public/track'
@@ -252,6 +271,16 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface AdminRouteChildren {
+  AdminDemosRoute: typeof AdminDemosRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminDemosRoute: AdminDemosRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface BlogRouteChildren {
   BlogSlugRoute: typeof BlogSlugRoute
@@ -275,7 +304,7 @@ const DemoRouteWithChildren = DemoRoute._addFileChildren(DemoRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRoute: AdminRoute,
+  AdminRoute: AdminRouteWithChildren,
   BlogRoute: BlogRouteWithChildren,
   DemoRoute: DemoRouteWithChildren,
   EmployeeRoute: EmployeeRoute,
