@@ -44,7 +44,7 @@ function DemoNotFound() {
 }
 
 function DemoDetailPage() {
-  const { demo: d } = Route.useLoaderData();
+  const { demo: d } = Route.useLoaderData() as { demo: import("@/lib/demos-data").Demo };
 
   return (
     <div className="min-h-screen bg-background text-white">
