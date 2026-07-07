@@ -143,7 +143,7 @@ function DemoGalleryPage() {
         )}
       </section>
 
-      <Footer />
+      <Footer email="hello@truhubsolutions.com" phone="+91 79893 67882" />
       <FloatingWhatsApp />
     </div>
   );
