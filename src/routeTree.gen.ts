@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as PortalRouteImport } from './routes/portal'
 import { Route as EmployeeRouteImport } from './routes/employee'
+import { Route as DemoRouteImport } from './routes/demo'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
@@ -32,6 +33,11 @@ const PortalRoute = PortalRouteImport.update({
 const EmployeeRoute = EmployeeRouteImport.update({
   id: '/employee',
   path: '/employee',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DemoRoute = DemoRouteImport.update({
+  id: '/demo',
+  path: '/demo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BlogRoute = BlogRouteImport.update({
@@ -69,6 +75,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/blog': typeof BlogRouteWithChildren
+  '/demo': typeof DemoRoute
   '/employee': typeof EmployeeRoute
   '/portal': typeof PortalRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -80,6 +87,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/blog': typeof BlogRouteWithChildren
+  '/demo': typeof DemoRoute
   '/employee': typeof EmployeeRoute
   '/portal': typeof PortalRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -92,6 +100,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/blog': typeof BlogRouteWithChildren
+  '/demo': typeof DemoRoute
   '/employee': typeof EmployeeRoute
   '/portal': typeof PortalRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -105,6 +114,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/blog'
+    | '/demo'
     | '/employee'
     | '/portal'
     | '/sitemap.xml'
@@ -116,6 +126,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/blog'
+    | '/demo'
     | '/employee'
     | '/portal'
     | '/sitemap.xml'
@@ -127,6 +138,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/blog'
+    | '/demo'
     | '/employee'
     | '/portal'
     | '/sitemap.xml'
@@ -139,6 +151,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
   BlogRoute: typeof BlogRouteWithChildren
+  DemoRoute: typeof DemoRoute
   EmployeeRoute: typeof EmployeeRoute
   PortalRoute: typeof PortalRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -167,6 +180,13 @@ declare module '@tanstack/react-router' {
       path: '/employee'
       fullPath: '/employee'
       preLoaderRoute: typeof EmployeeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demo': {
+      id: '/demo'
+      path: '/demo'
+      fullPath: '/demo'
+      preLoaderRoute: typeof DemoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/blog': {
@@ -228,6 +248,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
   BlogRoute: BlogRouteWithChildren,
+  DemoRoute: DemoRoute,
   EmployeeRoute: EmployeeRoute,
   PortalRoute: PortalRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
