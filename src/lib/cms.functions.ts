@@ -260,9 +260,9 @@ export const adminUpsert = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await requireAdmin(context as never);
-    const { error, data: rows } = await context.supabase
-      .from(data.table as AdminTable)
-      .upsert(data.row as never)
+    const { error, data: rows } = await (context.supabase as any)
+      .from(data.table)
+      .upsert(data.row)
       .select();
     if (error) throw new Error(error.message);
     return { rows };
@@ -275,7 +275,7 @@ export const adminDelete = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await requireAdmin(context as never);
-    const { error } = await context.supabase.from(data.table as AdminTable).delete().eq("id" as never, data.id);
+    const { error } = await (context.supabase as any).from(data.table).delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true as const };
   });
