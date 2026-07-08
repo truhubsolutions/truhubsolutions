@@ -2,7 +2,7 @@ import { Globe, Mail as MailIcon, MessageCircle } from "lucide-react";
 const Instagram = Globe;
 const Linkedin = MailIcon;
 const Twitter = MessageCircle;
-const logoAsset = { url: "/truhub-logo.png" };
+const logoAsset = { url: "/truhub-logo.webp" };
 
 export function Footer({ email, phone }: { email: string; phone: string }) {
   return (
@@ -11,7 +11,7 @@ export function Footer({ email, phone }: { email: string; phone: string }) {
         <div className="grid gap-10 md:grid-cols-4">
           <div className="md:col-span-2">
             <div className="flex items-center gap-2.5">
-              <img src={logoAsset.url} alt="TruHub" className="h-10 w-10 rounded-lg object-contain" />
+              <img src={logoAsset.url} alt="TruHub" width={40} height={40} loading="lazy" decoding="async" className="h-10 w-10 rounded-lg object-contain" />
               <span className="font-display text-lg font-semibold">
                 TruHub<span className="text-[#38BDF8]"> Solutions</span>
               </span>
@@ -53,6 +53,14 @@ export function Footer({ email, phone }: { email: string; phone: string }) {
             <ul className="space-y-2 text-sm text-white/60">
               <li><a href={`mailto:${email}`} className="hover:text-[#38BDF8]">{email}</a></li>
               <li><a href={`tel:${phone.replace(/\s/g, "")}`} className="hover:text-[#38BDF8]">{phone}</a></li>
+            </ul>
+            <div className="mt-6 mb-3 text-sm font-semibold text-white/80">Legal</div>
+            <ul className="space-y-2 text-sm text-white/60">
+              <li><a href="/privacy" className="hover:text-[#38BDF8]">Privacy Policy</a></li>
+              <li><a href="/terms" className="hover:text-[#38BDF8]">Terms &amp; Conditions</a></li>
+              <li><a href="/cookies" className="hover:text-[#38BDF8]">Cookie Policy</a></li>
+              <li><a href="/refund" className="hover:text-[#38BDF8]">Refund Policy</a></li>
+              <li><a href="/service-agreement" className="hover:text-[#38BDF8]">Service Agreement</a></li>
             </ul>
           </div>
         </div>

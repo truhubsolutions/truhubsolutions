@@ -27,6 +27,16 @@ import { MessagesPanel } from "@/components/admin/messages-panel";
 import { CommandPalette } from "@/components/admin/command-palette";
 import { recordLoginAttempt } from "@/lib/security/security.functions";
 
+async function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve((r.result as string).split(",")[1] ?? "");
+    r.onerror = () => reject(r.error ?? new Error("Read failed"));
+    r.readAsDataURL(file);
+  });
+}
+
+
 
 
 export const Route = createFileRoute("/admin")({
@@ -146,7 +156,7 @@ type Tab =
   | "dashboard" | "analytics" | "leads" | "activity" | "security"
   | "users" | "projects" | "messages" | "backups"
   | "sections" | "portfolio" | "services" | "why" | "pricing" | "addons" | "testimonials" | "faqs"
-  | "hero" | "about" | "founder" | "process" | "contact" | "submissions" | "media"
+  | "hero" | "about" | "founder" | "team" | "process" | "contact" | "submissions" | "media"
   | "blog" | "settings" | "seo" | "redirects" | "media-library";
 
 const TABS: { id: Tab; label: string }[] = [
@@ -168,6 +178,7 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "addons", label: "Add-ons" },
   { id: "portfolio", label: "Portfolio" },
   { id: "founder", label: "Founder" },
+  { id: "team", label: "Team" },
   { id: "process", label: "Process Steps" },
   { id: "testimonials", label: "Testimonials" },
   { id: "faqs", label: "FAQs" },
@@ -342,6 +353,23 @@ function Dashboard({ email, onSignOut }: { email: string; onSignOut: () => void 
                 onChanged={() => { qc.invalidateQueries(); content.refetch(); }}
               />
             )}
+            {tab === "team" && (
+              <ListEditor table="team_members" title="Team Members" rows={(content.data as unknown as { team?: Array<Record<string, unknown>> }).team ?? []}
+                fields={[
+                  { key: "name", label: "Name", type: "text", required: true },
+                  { key: "title", label: "Designation / Title", type: "text", required: true },
+                  { key: "tagline", label: "Tagline (short one-liner)", type: "text" },
+                  { key: "description", label: "Description / Bio", type: "textarea" },
+                  { key: "photo_url", label: "Photo", type: "image" },
+                  { key: "email", label: "Email", type: "text" },
+                  { key: "phone", label: "Phone", type: "text" },
+                  { key: "linkedin_url", label: "LinkedIn URL", type: "text" },
+                  { key: "is_active", label: "Active (show on site)", type: "bool" },
+                  { key: "sort_order", label: "Order", type: "number" },
+                ]}
+                onChanged={() => { qc.invalidateQueries(); content.refetch(); }}
+              />
+            )}
             {tab === "contact" && (
               <SingleEditor table="contact_info" title="Contact Info" row={content.data.contact}
                 fields={[
@@ -412,8 +440,7 @@ function ImageField({ value, onChange }: { value: string | null | undefined; onC
     const file = e.target.files?.[0]; if (!file) return;
     setBusy(true);
     try {
-      const buf = await file.arrayBuffer();
-      const base64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
+      const base64 = await fileToBase64(file);
       const { url } = await upload({ data: { filename: file.name, contentType: file.type, base64 } });
       onChange(url);
       toast.success("Uploaded");
@@ -569,8 +596,7 @@ function MediaPanel() {
     const file = e.target.files?.[0]; if (!file) return;
     setBusy(true);
     try {
-      const buf = await file.arrayBuffer();
-      const base64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
+      const base64 = await fileToBase64(file);
       await upload({ data: { filename: file.name, contentType: file.type, base64 } });
       toast.success("Uploaded");
       list.refetch();

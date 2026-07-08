@@ -8,6 +8,7 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 import { Toaster } from "sonner";
+import { CookieConsent } from "../components/site/cookie-consent";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -86,6 +87,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "description", content: SITE_DESC },
       { name: "author", content: "TruHub Solutions" },
       { name: "theme-color", content: "#030712" },
+      { name: "color-scheme", content: "dark" },
       { property: "og:title", content: SITE_TITLE },
       { property: "og:description", content: SITE_DESC },
       { property: "og:type", content: "website" },
@@ -98,6 +100,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
+      { rel: "preload", as: "image", href: "/truhub-logo.webp", fetchpriority: "high" },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
@@ -113,11 +116,23 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "@context": "https://schema.org",
           "@type": "Organization",
           name: "TruHub Solutions",
+          url: "https://pixel-kiss-forge.lovable.app",
+          logo: "https://pixel-kiss-forge.lovable.app/truhub-logo.webp",
           description: SITE_DESC,
           slogan: "Build. Grow. Succeed.",
           email: "truhub.solutions@gmail.com",
           telephone: "+91 7989367882",
           founder: { "@type": "Person", name: "Jayanth Gone", jobTitle: "Founder & Chairman" },
+          sameAs: [],
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "TruHub Solutions",
+          url: "https://pixel-kiss-forge.lovable.app",
         }),
       },
     ],
@@ -162,6 +177,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <Outlet />
       <Toaster theme="dark" position="bottom-center" richColors closeButton />
+      <CookieConsent />
     </QueryClientProvider>
   );
 }
