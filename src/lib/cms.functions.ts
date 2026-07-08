@@ -260,9 +260,9 @@ export const adminUpsert = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await requireAdmin(context as never);
-    const { error, data: rows } = await context.supabase
-      .from(data.table as AdminTable)
-      .upsert(data.row as never)
+    const { error, data: rows } = await (context.supabase as any)
+      .from(data.table)
+      .upsert(data.row)
       .select();
     if (error) throw new Error(error.message);
     return { rows };
