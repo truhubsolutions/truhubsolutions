@@ -71,28 +71,19 @@ async function buildSystemPrompt(): Promise<{ prompt: string; enabled: boolean }
   }
 }
 
-// Free OpenRouter models (rotate on 429). All have :free tier — no paid plan needed.
-// Order: highest-quality/most-reliable first.
-const OPENROUTER_FREE_MODELS = [
-  "openai/gpt-oss-20b:free",
-  "openai/gpt-oss-120b:free",
-  "meta-llama/llama-3.3-70b-instruct:free",
-  "nvidia/nemotron-nano-9b-v2:free",
-];
-
 export const Route = createFileRoute("/api/chat")({
   server: {
     handlers: {
       POST: async ({ request }) => {
         try {
-          const key = process.env.OPENROUTER_API_KEY;
+          const key = process.env.LOVABLE_API_KEY;
           if (!key) {
-            console.error("[api/chat] Missing OPENROUTER_API_KEY env var");
+            console.error("[api/chat] Missing LOVABLE_API_KEY env var");
             return Response.json(
               {
-                error: "chat_not_configured",
                 content:
-                  "The chatbot isn't configured yet. Please set OPENROUTER_API_KEY (free at openrouter.ai) in the deployment environment.",
+                  "The chatbot isn't configured yet. Please contact truhub.solutions@gmail.com.",
+                error: "chat_not_configured",
               },
               { status: 200 },
             );
@@ -114,47 +105,38 @@ export const Route = createFileRoute("/api/chat")({
             ...history.map((m) => ({ role: m.role, content: m.content })),
           ];
 
-          // Try each free model in order — fall back if one is rate-limited.
-          let lastError: { status: number; body: string } | null = null;
-          for (const model of OPENROUTER_FREE_MODELS) {
-            const resp = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${key}`,
-                "HTTP-Referer": "https://truhub.lovable.app",
-                "X-Title": "TruHub Solutions Chatbot",
-              },
-              body: JSON.stringify({ model, messages, stream: false }),
-            });
-            if (resp.ok) {
-              const json = (await resp.json()) as {
-                choices?: Array<{ message?: { content?: string } }>;
-              };
-              const content =
-                json.choices?.[0]?.message?.content?.trim() ||
-                "Sorry, I couldn't generate a reply.";
-              return Response.json({ content, model });
-            }
-            const text = await resp.text();
-            console.warn(`[api/chat] OpenRouter model ${model} failed:`, resp.status, text.slice(0, 200));
-            lastError = { status: resp.status, body: text };
-            // Only fall back on 429/503; surface other errors immediately.
-            if (resp.status !== 429 && resp.status !== 503 && resp.status !== 502) {
-              break;
-            }
+          const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Lovable-API-Key": key,
+            },
+            body: JSON.stringify({
+              model: "google/gemini-2.5-flash",
+              messages,
+              stream: false,
+            }),
+          });
+
+          if (resp.ok) {
+            const json = (await resp.json()) as {
+              choices?: Array<{ message?: { content?: string } }>;
+            };
+            const content =
+              json.choices?.[0]?.message?.content?.trim() ||
+              "Sorry, I couldn't generate a reply.";
+            return Response.json({ content });
           }
 
-          console.error("[api/chat] OpenRouter error", lastError?.status, lastError?.body?.slice(0, 300));
-          const isRateLimited = lastError?.status === 429;
-          const msg = isRateLimited
-            ? "We're getting a lot of requests right now. Please try again in a moment."
-            : "Sorry, the assistant is temporarily unavailable. Please email truhub.solutions@gmail.com.";
-          return Response.json({
-            content: msg,
-            error: "openrouter_error",
-            status: lastError?.status,
-          });
+          const text = await resp.text();
+          console.error("[api/chat] Lovable AI error", resp.status, text.slice(0, 300));
+          const msg =
+            resp.status === 429
+              ? "We're getting a lot of requests right now. Please try again in a moment."
+              : resp.status === 402
+                ? "AI credits are exhausted. Please contact truhub.solutions@gmail.com."
+                : "Sorry, the assistant is temporarily unavailable. Please email truhub.solutions@gmail.com.";
+          return Response.json({ content: msg, error: "ai_error", status: resp.status });
         } catch (err) {
           console.error("[api/chat] unhandled error", err);
           return Response.json(
@@ -170,3 +152,4 @@ export const Route = createFileRoute("/api/chat")({
     },
   },
 });
+
