@@ -9,313 +9,38 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TermsRouteImport } from './routes/terms'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as ServiceAgreementRouteImport } from './routes/service-agreement'
-import { Route as RefundRouteImport } from './routes/refund'
-import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as PortalRouteImport } from './routes/portal'
-import { Route as InvoiceRouteImport } from './routes/invoice'
-import { Route as EmployeeRouteImport } from './routes/employee'
-import { Route as CookiesRouteImport } from './routes/cookies'
-import { Route as BlogRouteImport } from './routes/blog'
-import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
-import { Route as ApiContactRouteImport } from './routes/api/contact'
-import { Route as ApiChatRouteImport } from './routes/api/chat'
-import { Route as ApiPublicTrackRouteImport } from './routes/api/public/track'
 
-const TermsRoute = TermsRouteImport.update({
-  id: '/terms',
-  path: '/terms',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ServiceAgreementRoute = ServiceAgreementRouteImport.update({
-  id: '/service-agreement',
-  path: '/service-agreement',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RefundRoute = RefundRouteImport.update({
-  id: '/refund',
-  path: '/refund',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PrivacyRoute = PrivacyRouteImport.update({
-  id: '/privacy',
-  path: '/privacy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PortalRoute = PortalRouteImport.update({
-  id: '/portal',
-  path: '/portal',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const InvoiceRoute = InvoiceRouteImport.update({
-  id: '/invoice',
-  path: '/invoice',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EmployeeRoute = EmployeeRouteImport.update({
-  id: '/employee',
-  path: '/employee',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CookiesRoute = CookiesRouteImport.update({
-  id: '/cookies',
-  path: '/cookies',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BlogRoute = BlogRouteImport.update({
-  id: '/blog',
-  path: '/blog',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BlogSlugRoute = BlogSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => BlogRoute,
-} as any)
-const ApiContactRoute = ApiContactRouteImport.update({
-  id: '/api/contact',
-  path: '/api/contact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiChatRoute = ApiChatRouteImport.update({
-  id: '/api/chat',
-  path: '/api/chat',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicTrackRoute = ApiPublicTrackRouteImport.update({
-  id: '/api/public/track',
-  path: '/api/public/track',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
-  '/blog': typeof BlogRouteWithChildren
-  '/cookies': typeof CookiesRoute
-  '/employee': typeof EmployeeRoute
-  '/invoice': typeof InvoiceRoute
-  '/portal': typeof PortalRoute
-  '/privacy': typeof PrivacyRoute
-  '/refund': typeof RefundRoute
-  '/service-agreement': typeof ServiceAgreementRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/terms': typeof TermsRoute
-  '/api/chat': typeof ApiChatRoute
-  '/api/contact': typeof ApiContactRoute
-  '/blog/$slug': typeof BlogSlugRoute
-  '/api/public/track': typeof ApiPublicTrackRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
-  '/blog': typeof BlogRouteWithChildren
-  '/cookies': typeof CookiesRoute
-  '/employee': typeof EmployeeRoute
-  '/invoice': typeof InvoiceRoute
-  '/portal': typeof PortalRoute
-  '/privacy': typeof PrivacyRoute
-  '/refund': typeof RefundRoute
-  '/service-agreement': typeof ServiceAgreementRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/terms': typeof TermsRoute
-  '/api/chat': typeof ApiChatRoute
-  '/api/contact': typeof ApiContactRoute
-  '/blog/$slug': typeof BlogSlugRoute
-  '/api/public/track': typeof ApiPublicTrackRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
-  '/blog': typeof BlogRouteWithChildren
-  '/cookies': typeof CookiesRoute
-  '/employee': typeof EmployeeRoute
-  '/invoice': typeof InvoiceRoute
-  '/portal': typeof PortalRoute
-  '/privacy': typeof PrivacyRoute
-  '/refund': typeof RefundRoute
-  '/service-agreement': typeof ServiceAgreementRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/terms': typeof TermsRoute
-  '/api/chat': typeof ApiChatRoute
-  '/api/contact': typeof ApiContactRoute
-  '/blog/$slug': typeof BlogSlugRoute
-  '/api/public/track': typeof ApiPublicTrackRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/admin'
-    | '/blog'
-    | '/cookies'
-    | '/employee'
-    | '/invoice'
-    | '/portal'
-    | '/privacy'
-    | '/refund'
-    | '/service-agreement'
-    | '/sitemap.xml'
-    | '/terms'
-    | '/api/chat'
-    | '/api/contact'
-    | '/blog/$slug'
-    | '/api/public/track'
+  fullPaths: '/'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/admin'
-    | '/blog'
-    | '/cookies'
-    | '/employee'
-    | '/invoice'
-    | '/portal'
-    | '/privacy'
-    | '/refund'
-    | '/service-agreement'
-    | '/sitemap.xml'
-    | '/terms'
-    | '/api/chat'
-    | '/api/contact'
-    | '/blog/$slug'
-    | '/api/public/track'
-  id:
-    | '__root__'
-    | '/'
-    | '/admin'
-    | '/blog'
-    | '/cookies'
-    | '/employee'
-    | '/invoice'
-    | '/portal'
-    | '/privacy'
-    | '/refund'
-    | '/service-agreement'
-    | '/sitemap.xml'
-    | '/terms'
-    | '/api/chat'
-    | '/api/contact'
-    | '/blog/$slug'
-    | '/api/public/track'
+  to: '/'
+  id: '__root__' | '/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRoute
-  BlogRoute: typeof BlogRouteWithChildren
-  CookiesRoute: typeof CookiesRoute
-  EmployeeRoute: typeof EmployeeRoute
-  InvoiceRoute: typeof InvoiceRoute
-  PortalRoute: typeof PortalRoute
-  PrivacyRoute: typeof PrivacyRoute
-  RefundRoute: typeof RefundRoute
-  ServiceAgreementRoute: typeof ServiceAgreementRoute
-  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
-  TermsRoute: typeof TermsRoute
-  ApiChatRoute: typeof ApiChatRoute
-  ApiContactRoute: typeof ApiContactRoute
-  ApiPublicTrackRoute: typeof ApiPublicTrackRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/terms': {
-      id: '/terms'
-      path: '/terms'
-      fullPath: '/terms'
-      preLoaderRoute: typeof TermsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/service-agreement': {
-      id: '/service-agreement'
-      path: '/service-agreement'
-      fullPath: '/service-agreement'
-      preLoaderRoute: typeof ServiceAgreementRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/refund': {
-      id: '/refund'
-      path: '/refund'
-      fullPath: '/refund'
-      preLoaderRoute: typeof RefundRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/privacy': {
-      id: '/privacy'
-      path: '/privacy'
-      fullPath: '/privacy'
-      preLoaderRoute: typeof PrivacyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/portal': {
-      id: '/portal'
-      path: '/portal'
-      fullPath: '/portal'
-      preLoaderRoute: typeof PortalRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/invoice': {
-      id: '/invoice'
-      path: '/invoice'
-      fullPath: '/invoice'
-      preLoaderRoute: typeof InvoiceRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/employee': {
-      id: '/employee'
-      path: '/employee'
-      fullPath: '/employee'
-      preLoaderRoute: typeof EmployeeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/cookies': {
-      id: '/cookies'
-      path: '/cookies'
-      fullPath: '/cookies'
-      preLoaderRoute: typeof CookiesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/blog': {
-      id: '/blog'
-      path: '/blog'
-      fullPath: '/blog'
-      preLoaderRoute: typeof BlogRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -323,74 +48,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/blog/$slug': {
-      id: '/blog/$slug'
-      path: '/$slug'
-      fullPath: '/blog/$slug'
-      preLoaderRoute: typeof BlogSlugRouteImport
-      parentRoute: typeof BlogRoute
-    }
-    '/api/contact': {
-      id: '/api/contact'
-      path: '/api/contact'
-      fullPath: '/api/contact'
-      preLoaderRoute: typeof ApiContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/chat': {
-      id: '/api/chat'
-      path: '/api/chat'
-      fullPath: '/api/chat'
-      preLoaderRoute: typeof ApiChatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/track': {
-      id: '/api/public/track'
-      path: '/api/public/track'
-      fullPath: '/api/public/track'
-      preLoaderRoute: typeof ApiPublicTrackRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
-interface BlogRouteChildren {
-  BlogSlugRoute: typeof BlogSlugRoute
-}
-
-const BlogRouteChildren: BlogRouteChildren = {
-  BlogSlugRoute: BlogSlugRoute,
-}
-
-const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRoute: AdminRoute,
-  BlogRoute: BlogRouteWithChildren,
-  CookiesRoute: CookiesRoute,
-  EmployeeRoute: EmployeeRoute,
-  InvoiceRoute: InvoiceRoute,
-  PortalRoute: PortalRoute,
-  PrivacyRoute: PrivacyRoute,
-  RefundRoute: RefundRoute,
-  ServiceAgreementRoute: ServiceAgreementRoute,
-  SitemapDotxmlRoute: SitemapDotxmlRoute,
-  TermsRoute: TermsRoute,
-  ApiChatRoute: ApiChatRoute,
-  ApiContactRoute: ApiContactRoute,
-  ApiPublicTrackRoute: ApiPublicTrackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
